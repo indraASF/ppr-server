@@ -12,7 +12,7 @@ const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY;
 const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
 const SLACK_BOT_TOKEN = process.env.SLACK_BOT_TOKEN;
 const GITHUB_REPO = 'indraASF/ppr-deliverables';
-const SLACK_CHANNEL = '#portfolio-reviews';
+const SLACK_CHANNEL = 'portfolio-reviews';
 
 // ── HEALTH CHECK ──
 app.get('/', (req, res) => {
@@ -227,7 +227,7 @@ Niche Master Course Workflow Find Your True Audience`;
     const liveUrl = `https://indraasf.github.io/ppr-deliverables/${filename}`;
 
     // ── POST TO SLACK ──
-    await fetch('https://slack.com/api/chat.postMessage', {
+    const slackRes = await fetch('https://slack.com/api/chat.postMessage', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${SLACK_BOT_TOKEN}`,
@@ -238,6 +238,8 @@ Niche Master Course Workflow Find Your True Audience`;
         text: `*[${artistName.toUpperCase()} — PORTFOLIO REVIEW]*\n\nReilly's review is ready. Click to open:\n${liveUrl}`
       })
     });
+    const slackData = await slackRes.json();
+    console.log('Slack response:', JSON.stringify(slackData));
 
     console.log(`PPR generated and delivered for ${artistName}`);
 
