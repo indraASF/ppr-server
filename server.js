@@ -3,6 +3,10 @@ const fetch = require('node-fetch');
 const app = express();
 
 app.use(express.json());
+app.use((req, res, next) => {
+  console.log(`[${new Date().toISOString()}] ${req.method} ${req.path} - Body keys: ${Object.keys(req.body || {}).join(', ') || 'empty'}`);
+  next();
+});
 
 const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY;
 const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
@@ -17,6 +21,7 @@ app.get('/', (req, res) => {
 
 // ── MAIN ENDPOINT ──
 app.post('/generate', async (req, res) => {
+  console.log('Generate endpoint hit');
   const data = req.body;
 
   const artistName = data['What is your full name?'] || 'Unknown Artist';
