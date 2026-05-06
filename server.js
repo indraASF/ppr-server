@@ -254,22 +254,39 @@ Niche Master Course Workflow Find Your True Audience`;
 
 // ── HTML BUILDER ──
 function buildHTML(artistName, reviewText) {
-  const paragraphs = reviewText
+  // Convert markdown to clean HTML
+  let content = reviewText
+    // Headers
+    .replace(/^#### (.+)$/gm, '<h4>$1</h4>')
+    .replace(/^### (.+)$/gm, '<h3>$1</h3>')
+    .replace(/^## (.+)$/gm, '<h2>$1</h2>')
+    .replace(/^# (.+)$/gm, '<h1>$1</h1>')
+    // Bold
+    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+    // Italic
+    .replace(/\*(.+?)\*/g, '<em>$1</em>')
+    // Horizontal rules
+    .replace(/^---$/gm, '<hr>')
+    // Checklist items with PASS
+    .replace(/^- (.+): \*\*PASS\*\*(.*)$/gm, '<div class="checklist-item pass"><span class="status pass">PASS</span> $1</div>')
+    // Checklist items with FAIL
+    .replace(/^- (.+): \*\*FAIL\*\*(.*)$/gm, (match, item, note) => `<div class="checklist-item fail"><span class="status fail">FAIL</span> ${item}${note ? `<span class="checklist-note">${note}</span>` : ''}</div>`)
+    // Checklist items with PARTIAL
+    .replace(/^- (.+): \*\*PARTIAL\*\*(.*)$/gm, (match, item, note) => `<div class="checklist-item partial"><span class="status partial">PARTIAL</span> ${item}${note ? `<span class="checklist-note">${note}</span>` : ''}</div>`)
+    // Regular bullet points
+    .replace(/^- (.+)$/gm, '<li>$1</li>')
+    // Wrap consecutive li items in ul
+    .replace(/(<li>.*<\/li>\n?)+/g, '<ul>$&</ul>')
+    // Paragraphs - wrap lines that aren't already HTML tags
     .split('\n')
-    .filter(line => line.trim())
     .map(line => {
-      if (line.startsWith('PART ') || line.startsWith('APPENDIX')) {
-        return `<h2>${line}</h2>`;
-      } else if (line.startsWith('Professional Portfolio Review')) {
-        return `<h1>${line}</h1>`;
-      } else if (line.startsWith('Prepared by') || line.startsWith('Your practice')) {
-        return `<p class="subtitle">${line}</p>`;
-      } else if (line.match(/^(PASS|FAIL|PARTIAL)/i) || line.startsWith('- ')) {
-        return `<p class="checklist-item">${line}</p>`;
-      } else {
-        return `<p>${line}</p>`;
-      }
-    }).join('\n');
+      const trimmed = line.trim();
+      if (!trimmed) return '';
+      if (trimmed.startsWith('<')) return trimmed;
+      return `<p>${trimmed}</p>`;
+    })
+    .filter(line => line !== '')
+    .join('\n');
 
   return `<!DOCTYPE html>
 <html lang="en">
@@ -277,34 +294,38 @@ function buildHTML(artistName, reviewText) {
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Professional Portfolio Review — ${artistName}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=Inter:wght@300;400;500&display=swap');
-
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
       --black: #0A0A0A;
       --dark: #1A1A1A;
       --mid: #6B6B6B;
-      --light: #F5F5F3;
+      --light: #F7F7F5;
       --rule: #E2E2E2;
       --accent: #B8A082;
       --white: #FFFFFF;
+      --pass: #3D7A5A;
+      --fail: #B03A2E;
+      --partial: #9A7B2E;
     }
 
     body {
       font-family: 'EB Garamond', Georgia, serif;
       background: var(--white);
       color: var(--dark);
-      font-size: 18px;
-      line-height: 1.75;
+      font-size: 19px;
+      line-height: 1.8;
     }
 
+    /* ── COVER ── */
     .cover {
       background: var(--black);
       color: var(--white);
-      padding: 120px 80px;
-      min-height: 320px;
+      padding: 100px 80px 80px;
+      min-height: 340px;
       display: flex;
       flex-direction: column;
       justify-content: flex-end;
@@ -312,70 +333,72 @@ function buildHTML(artistName, reviewText) {
 
     .cover-eyebrow {
       font-family: 'Inter', sans-serif;
-      font-size: 11px;
-      font-weight: 400;
-      letter-spacing: 0.18em;
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 0.22em;
       text-transform: uppercase;
       color: var(--accent);
-      margin-bottom: 24px;
+      margin-bottom: 28px;
     }
 
-    .cover h1 {
+    .cover-title {
       font-family: 'EB Garamond', serif;
-      font-size: 48px;
+      font-size: 52px;
       font-weight: 400;
-      line-height: 1.1;
+      line-height: 1.05;
       color: var(--white);
-      margin-bottom: 16px;
-      max-width: 700px;
+      margin-bottom: 20px;
     }
 
-    .cover .cover-sub {
+    .cover-sub {
       font-family: 'Inter', sans-serif;
       font-size: 13px;
       font-weight: 300;
-      color: rgba(255,255,255,0.5);
-      letter-spacing: 0.06em;
+      color: rgba(255,255,255,0.4);
+      letter-spacing: 0.05em;
     }
 
+    /* ── CONTAINER ── */
     .container {
-      max-width: 780px;
+      max-width: 760px;
       margin: 0 auto;
       padding: 80px 40px 120px;
     }
 
-    .intro {
-      border-bottom: 1px solid var(--rule);
-      padding-bottom: 60px;
-      margin-bottom: 60px;
-    }
-
-    .intro p {
-      font-size: 19px;
-      line-height: 1.8;
-      color: var(--dark);
-      margin-bottom: 20px;
-    }
+    /* ── TYPOGRAPHY ── */
+    h1 { display: none; } /* covered by cover block */
 
     h2 {
       font-family: 'Inter', sans-serif;
-      font-size: 11px;
-      font-weight: 500;
-      letter-spacing: 0.18em;
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.22em;
       text-transform: uppercase;
       color: var(--accent);
-      margin-top: 72px;
-      margin-bottom: 8px;
+      margin-top: 80px;
+      margin-bottom: 6px;
     }
 
     h3 {
       font-family: 'EB Garamond', serif;
-      font-size: 28px;
+      font-size: 30px;
       font-weight: 400;
       color: var(--dark);
-      margin-bottom: 24px;
+      margin-top: 8px;
+      margin-bottom: 28px;
+      padding-bottom: 14px;
       border-bottom: 1px solid var(--dark);
-      padding-bottom: 12px;
+    }
+
+    h4 {
+      font-family: 'Inter', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--mid);
+      margin-top: 40px;
+      margin-bottom: 12px;
     }
 
     p {
@@ -383,107 +406,93 @@ function buildHTML(artistName, reviewText) {
       color: var(--dark);
     }
 
-    .subtitle {
-      font-family: 'Inter', sans-serif;
-      font-size: 13px;
-      font-weight: 300;
-      color: var(--mid);
-      letter-spacing: 0.04em;
+    strong {
+      font-weight: 500;
     }
 
-    .checklist-item {
+    hr {
+      border: none;
+      border-top: 1px solid var(--rule);
+      margin: 48px 0;
+    }
+
+    ul {
+      margin: 16px 0 24px 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    li {
       font-family: 'Inter', sans-serif;
       font-size: 14px;
-      padding: 10px 16px;
-      border-left: 3px solid var(--rule);
-      margin-bottom: 8px;
-      line-height: 1.5;
-      color: var(--dark);
+      color: var(--mid);
+      padding: 8px 0 8px 20px;
+      border-bottom: 1px solid var(--rule);
+      position: relative;
     }
 
-    .checklist-item.pass { border-left-color: #4A7C59; }
-    .checklist-item.fail { border-left-color: #C0392B; }
-    .checklist-item.partial { border-left-color: #B8860B; }
-
-    .analysis {
-      background: var(--light);
-      border-left: 3px solid var(--accent);
-      padding: 32px 36px;
-      margin: 32px 0;
+    li::before {
+      content: '—';
+      position: absolute;
+      left: 0;
+      color: var(--accent);
     }
 
-    .analysis p {
-      font-size: 17px;
-      line-height: 1.8;
-    }
-
-    .community-list {
-      margin: 24px 0;
-    }
-
-    .community-item {
-      padding: 16px 0;
+    /* ── CHECKLIST ── */
+    .checklist-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 12px 0;
       border-bottom: 1px solid var(--rule);
       font-family: 'Inter', sans-serif;
       font-size: 14px;
+      color: var(--dark);
+      line-height: 1.5;
     }
 
-    .community-item strong {
+    .status {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      padding: 3px 8px;
+      border-radius: 2px;
+      white-space: nowrap;
+      margin-top: 1px;
+    }
+
+    .status.pass { background: #EAF4EE; color: var(--pass); }
+    .status.fail { background: #FBEAEA; color: var(--fail); }
+    .status.partial { background: #FBF5E6; color: var(--partial); }
+
+    .checklist-note {
       display: block;
-      color: var(--dark);
-      margin-bottom: 4px;
-    }
-
-    .community-item span {
       color: var(--mid);
-    }
-
-    .closing {
-      margin-top: 72px;
-      padding-top: 48px;
-      border-top: 1px solid var(--rule);
-    }
-
-    .signature {
-      font-family: 'EB Garamond', serif;
-      font-size: 22px;
-      font-style: italic;
-      color: var(--dark);
-      margin-top: 32px;
-    }
-
-    .appendix {
-      margin-top: 72px;
-      padding: 48px;
-      background: var(--light);
-    }
-
-    .appendix h2 {
-      margin-top: 0;
-      margin-bottom: 24px;
-    }
-
-    .appendix p {
-      font-family: 'Inter', sans-serif;
       font-size: 13px;
-      color: var(--mid);
-      margin-bottom: 8px;
+      margin-top: 4px;
+      font-style: italic;
     }
 
+    /* ── ANALYSIS BLOCKS ── */
+    .container > p:not(:first-child) {
+      line-height: 1.85;
+    }
+
+    /* ── FOOTER ── */
     .footer {
       background: var(--black);
-      color: rgba(255,255,255,0.3);
+      color: rgba(255,255,255,0.25);
       text-align: center;
-      padding: 40px;
+      padding: 36px 40px;
       font-family: 'Inter', sans-serif;
-      font-size: 11px;
-      letter-spacing: 0.1em;
+      font-size: 10px;
+      letter-spacing: 0.14em;
       text-transform: uppercase;
     }
 
     @media (max-width: 600px) {
-      .cover { padding: 60px 32px; }
-      .cover h1 { font-size: 32px; }
+      .cover { padding: 60px 28px 48px; }
+      .cover-title { font-size: 36px; }
       .container { padding: 48px 24px 80px; }
     }
   </style>
@@ -492,12 +501,12 @@ function buildHTML(artistName, reviewText) {
 
   <div class="cover">
     <div class="cover-eyebrow">Art Storefronts × Reilly Thomson</div>
-    <h1>Professional Portfolio Review</h1>
-    <p class="cover-sub">Prepared for ${artistName} &nbsp;·&nbsp; Evaluated at gallery standard</p>
+    <div class="cover-title">Professional Portfolio Review</div>
+    <div class="cover-sub">Prepared for ${artistName}&nbsp;&nbsp;·&nbsp;&nbsp;Evaluated at gallery standard</div>
   </div>
 
   <div class="container">
-    ${paragraphs}
+    ${content}
   </div>
 
   <div class="footer">
