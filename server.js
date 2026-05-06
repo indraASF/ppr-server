@@ -24,21 +24,25 @@ app.post('/generate', async (req, res) => {
   console.log('Generate endpoint hit');
   const data = req.body;
 
-  const artistName = data['What is your full name?'] || 'Unknown Artist';
-  const websiteUrl = data['What is the URL of your website?'] || '';
-  const instagramHandle = data['What is your Instagram handle?'] || '';
-  const otherPlatforms = data['Do you have a presence on any other platforms? If yes, please share your handle or profile URL for each.'] || 'None';
-  const artPractice = data['In as many words as you\'d like, describe your art practice — including your subject matter, medium, recurring themes or ideas, and any artists whose work has influenced yours.'] || '';
-  const personalMotivation = data['What is the personal motivation or driving question behind your work? Why do you make what you make?'] || '';
-  const careerLength = data['How long have you been working as a professional artist?'] || '';
-  const representation = data['How would you describe your current representation situation?'] || '';
-  const exhibitionHistory = data['Exhibition history: Have you had any solo or group exhibitions, special presentations, art fairs, or murals? Please list them with venue and year if possible.'] || 'None provided';
-  const education = data['Education, residencies, grants & fellowships: Have you received a formal art education, participated in any residency, or received any grants, fellowships, or awards?'] || 'None provided';
-  const press = data['Press & recognition: Has your work been featured in any publications, blogs, podcasts, or media? Do any notable collectors or institutions own your work?'] || 'None provided';
-  const priceOriginals = data['What is the current price range of your original artworks?'] || '';
-  const pricePrints = data['What is the current price range of your prints or editions, if applicable?'] || 'N/A';
-  const collectorVision = data['Who do you imagine buys your work, or who would you most like to buy it?'] || '';
-  const additionalNotes = data['Is there anything about your practice, your goals, or your current situation that you\'d like Reilly to know before your consultation?'] || 'None';
+  const artistName = data.name || 'Unknown Artist';
+  const websiteUrl = data.website || '';
+  const instagramHandle = data.instagram || '';
+  const otherPlatforms = data.other_platforms || 'None';
+  const artPractice = data.art_practice || '';
+  const personalMotivation = data.personal_motivation || '';
+  const careerLength = data.career_length || '';
+  const representation = data.representation || '';
+  const exhibitionHistory = data.exhibition_history || 'None provided';
+  const education = data.education || 'None provided';
+  const press = data.press || 'None provided';
+  const priceOriginals = data.price_originals || '';
+  const pricePrints = data.price_prints || 'N/A';
+  const collectorVision = data.collector_vision || '';
+  const additionalNotes = data.additional_notes || 'None';
+
+  console.log('Artist name:', artistName);
+  console.log('Website:', websiteUrl);
+  console.log('Instagram:', instagramHandle);
 
   // Acknowledge immediately so Make doesn't time out
   res.status(200).json({ status: 'processing', artist: artistName });
