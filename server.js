@@ -22,17 +22,10 @@ app.get('/', (req, res) => {
 });
 
 // ── CHECKLIST PARSER ──
-// Checked = "Present" in Make checkbox, unchecked = empty/null
 function parseChecklist(value) {
   if (!value || value === '' || value === 'null' || value === 'undefined') return 'FAIL';
   if (value.toString().toLowerCase().includes('present')) return 'PASS';
   return 'FAIL';
-}
-
-function buildChecklistLine(item, value, note) {
-  const status = parseChecklist(value);
-  const noteLine = (status === 'FAIL' && note) ? `\n   Note: ${note}` : '';
-  return `${status}  ${item}${noteLine}`;
 }
 
 // ── MAIN ENDPOINT ──
@@ -305,14 +298,14 @@ I'm genuinely excited about what's ahead for you!
 
 ## Appendix: Useful Resources from Art Storefronts
 
-🎓 Dominating Your Niche
+Dominating Your Niche
 Instagram Best Practices (Before + After 1,000 Followers)
 1000 followers strategy for FACEBOOK!
 How to Invite Your Facebook Friends to Like your Business Page (+ sharing!)
-Social Media Security: Protecting Your Instagram and Facebook Accounts 🔒📱
-Become an Instagram Pro | 30-Day Bootcamp 📸
-Summer School ☀️🌴 | Breaking Down Successful Social Media Content
-🍂 Fall Content Academy | Level Up your Social Media Game
+Social Media Security: Protecting Your Instagram and Facebook Accounts
+Become an Instagram Pro | 30-Day Bootcamp
+Summer School | Breaking Down Successful Social Media Content
+Fall Content Academy | Level Up your Social Media Game
 Reddit 101
 Ultimate Guide for Successful Art Shows and Fairs
 The Pivot Playbook
@@ -320,7 +313,7 @@ Regular Giveaway Playbook
 The Custom Artwork Strategy
 Best Practices for Selling Limited Editions
 The Live Art Show Playbook (3.0)
-Niche Master Course Workflow | Find Your True Audience 🚀`;
+Niche Master Course Workflow | Find Your True Audience`;
 
     // ── CALL CLAUDE ──
     const claudeRes = await fetch('https://api.anthropic.com/v1/messages', {
@@ -348,17 +341,24 @@ Niche Master Course Workflow | Find Your True Audience 🚀`;
     // ── CREATE GOOGLE DOC ──
     let docUrl = null;
     try {
-      // Get access token using service account
       const serviceAccount = JSON.parse(GOOGLE_SERVICE_ACCOUNT);
+      console.log('Service account email:', serviceAccount.client_email);
+
+      const jwt = await createJWT(serviceAccount);
       const tokenRes = await fetch('https://oauth2.googleapis.com/token', {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         body: new URLSearchParams({
           grant_type: 'urn:ietf:params:oauth:grant-type:jwt-bearer',
-          assertion: await createJWT(serviceAccount)
+          assertion: jwt
         })
       });
       const tokenData = await tokenRes.json();
+      console.log('Token response:', JSON.stringify(tokenData));
+
+      if (!tokenData.access_token) {
+        throw new Error('Failed to get access token: ' + JSON.stringify(tokenData));
+      }
       const accessToken = tokenData.access_token;
 
       // Create the Google Doc
@@ -368,44 +368,46 @@ Niche Master Course Workflow | Find Your True Audience 🚀`;
           'Authorization': `Bearer ${accessToken}`,
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({
-          title: `${artistName} — Portfolio Review`
-        })
+        body: JSON.stringify({ title: `${artistName} — Portfolio Review` })
       });
       const docData = await docRes.json();
+      console.log('Doc creation response:', JSON.stringify(docData));
+
       const docId = docData.documentId;
+      if (!docId) {
+        throw new Error('No documentId returned: ' + JSON.stringify(docData));
+      }
 
       // Insert the review text
-      await fetch(`https://docs.googleapis.com/v1/documents/${docId}:batchUpdate`, {
+      const insertRes = await fetch(`https://docs.googleapis.com/v1/documents/${docId}:batchUpdate`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${accessToken}`,
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          requests: [{
-            insertText: {
-              location: { index: 1 },
-              text: reviewText
-            }
-          }]
+          requests: [{ insertText: { location: { index: 1 }, text: reviewText } }]
         })
       });
+      const insertData = await insertRes.json();
+      console.log('Insert text response:', JSON.stringify(insertData));
 
       // Move to PPR Reviews In Progress folder
-      await fetch(`https://www.googleapis.com/drive/v3/files/${docId}?addParents=${GDRIVE_FOLDER_ID}&removeParents=root`, {
+      const moveRes = await fetch(`https://www.googleapis.com/drive/v3/files/${docId}?addParents=${GDRIVE_FOLDER_ID}&removeParents=root`, {
         method: 'PATCH',
         headers: {
           'Authorization': `Bearer ${accessToken}`,
           'Content-Type': 'application/json'
         }
       });
+      const moveData = await moveRes.json();
+      console.log('Move to folder response:', JSON.stringify(moveData));
 
       docUrl = `https://docs.google.com/document/d/${docId}/edit`;
-      console.log('Google Doc created:', docUrl);
+      console.log('Google Doc created successfully:', docUrl);
 
     } catch (docErr) {
-      console.error('Google Doc creation error:', docErr);
+      console.error('Google Doc creation error:', docErr.message);
       docUrl = null;
     }
 
