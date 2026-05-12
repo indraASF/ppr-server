@@ -10,21 +10,87 @@ app.use((req, res, next) => {
 
 const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY;
 const SLACK_BOT_TOKEN = process.env.SLACK_BOT_TOKEN;
+const GOOGLE_SERVICE_ACCOUNT = process.env.GOOGLE_SERVICE_ACCOUNT;
+const GDRIVE_FOLDER_ID = '120HCA9vLsS7iQkPWdm7X6xyib480uRtq';
 const SLACK_CHANNEL = 'portfolio-reviews';
 
-// ── HEALTH CHECK ──
 app.get('/', (req, res) => {
-  res.send('PPR Pipeline v2.1 is running.');
+  res.send('PPR Pipeline v2.2 is running.');
 });
 
-// ── CHECKLIST PARSER ──
 function parseChecklist(value) {
   if (!value || value === '' || value === 'null' || value === 'undefined') return 'FAIL';
   if (value.toString().toLowerCase().includes('present')) return 'PASS';
   return 'FAIL';
 }
 
-// ── MAIN ENDPOINT ──
+// ── JWT HELPER FOR GOOGLE AUTH ──
+async function createJWT(serviceAccount) {
+  const crypto = require('crypto');
+  const header = Buffer.from(JSON.stringify({ alg: 'RS256', typ: 'JWT' })).toString('base64url');
+  const now = Math.floor(Date.now() / 1000);
+  const payload = Buffer.from(JSON.stringify({
+    iss: serviceAccount.client_email,
+    scope: 'https://www.googleapis.com/auth/drive',
+    aud: 'https://oauth2.googleapis.com/token',
+    exp: now + 3600,
+    iat: now
+  })).toString('base64url');
+  const signingInput = `${header}.${payload}`;
+  const sign = crypto.createSign('RSA-SHA256');
+  sign.update(signingInput);
+  const signature = sign.sign(serviceAccount.private_key, 'base64url');
+  return `${signingInput}.${signature}`;
+}
+
+async function getGoogleAccessToken() {
+  const serviceAccount = JSON.parse(GOOGLE_SERVICE_ACCOUNT);
+  const jwt = await createJWT(serviceAccount);
+  const tokenRes = await fetch('https://oauth2.googleapis.com/token', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: new URLSearchParams({
+      grant_type: 'urn:ietf:params:oauth:grant-type:jwt-bearer',
+      assertion: jwt
+    })
+  });
+  const tokenData = await tokenRes.json();
+  if (!tokenData.access_token) throw new Error('Failed to get access token: ' + JSON.stringify(tokenData));
+  return tokenData.access_token;
+}
+
+// ── CONVERT MARKDOWN TO HTML ──
+function markdownToHtml(text, artistName) {
+  let html = text
+    .replace(/^## (.+)$/gm, '<h2>$1</h2>')
+    .replace(/^### (.+)$/gm, '<h3>$1</h3>')
+    .replace(/^#### (.+)$/gm, '<h4>$1</h4>')
+    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+    .replace(/^---$/gm, '<hr>')
+    .replace(/\n\n/g, '</p><p>')
+    .replace(/^(?!<[h|p|h|u|o|l|s])/gm, '');
+
+  return `<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>${artistName} — Portfolio Review</title>
+  <style>
+    body { font-family: Georgia, serif; max-width: 800px; margin: 40px auto; padding: 0 40px; color: #1a1a1a; line-height: 1.7; }
+    h1 { font-size: 28px; margin-bottom: 4px; }
+    h2 { font-size: 22px; margin-top: 40px; border-bottom: 1px solid #ddd; padding-bottom: 8px; }
+    h3 { font-size: 18px; margin-top: 28px; }
+    h4 { font-size: 15px; margin-top: 20px; }
+    p { margin: 16px 0; }
+    hr { border: none; border-top: 1px solid #eee; margin: 32px 0; }
+  </style>
+</head>
+<body>
+<p>${html}</p>
+</body>
+</html>`;
+}
+
 app.post('/generate', async (req, res) => {
   console.log('Generate endpoint hit');
   const data = req.body;
@@ -323,76 +389,75 @@ Niche Master Course Workflow | Find Your True Audience`;
     const reviewText = claudeData.content[0].text;
     console.log('Claude generated review successfully');
 
-    // ── POST NOTIFICATION TO SLACK ──
-    const notifyRes = await fetch('https://slack.com/api/chat.postMessage', {
+    // ── CREATE GOOGLE DOC VIA DRIVE UPLOAD ──
+    let docUrl = null;
+    try {
+      const accessToken = await getGoogleAccessToken();
+      console.log('Got access token successfully');
+
+      const htmlContent = markdownToHtml(reviewText, artistName);
+      const docTitle = `${artistName} — Portfolio Review`;
+
+      // Multipart upload to Drive with conversion to Google Doc
+      const boundary = 'ppr_boundary_' + Date.now();
+      const metadata = JSON.stringify({
+        name: docTitle,
+        mimeType: 'application/vnd.google-apps.document',
+        parents: [GDRIVE_FOLDER_ID]
+      });
+
+      const body = [
+        `--${boundary}`,
+        'Content-Type: application/json; charset=UTF-8',
+        '',
+        metadata,
+        `--${boundary}`,
+        'Content-Type: text/html; charset=UTF-8',
+        '',
+        htmlContent,
+        `--${boundary}--`
+      ].join('\r\n');
+
+      const uploadRes = await fetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&convert=true', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${accessToken}`,
+          'Content-Type': `multipart/related; boundary=${boundary}`,
+          'Content-Length': Buffer.byteLength(body, 'utf8').toString()
+        },
+        body: body
+      });
+
+      const uploadData = await uploadRes.json();
+      console.log('Drive upload response:', JSON.stringify(uploadData));
+
+      if (uploadData.id) {
+        docUrl = `https://docs.google.com/document/d/${uploadData.id}/edit`;
+        console.log('Google Doc created successfully:', docUrl);
+      } else {
+        throw new Error('No file ID returned: ' + JSON.stringify(uploadData));
+      }
+
+    } catch (docErr) {
+      console.error('Google Doc creation error:', docErr.message);
+      docUrl = null;
+    }
+
+    // ── POST TO SLACK ──
+    const slackText = docUrl
+      ? `*[${artistName.toUpperCase()} — PORTFOLIO REVIEW]*\n\nReilly's review is ready for editing.\n\n*Google Doc:* ${docUrl}\n\n_Once edits are complete, move the Doc to the "Ready to Publish" folder to trigger the HTML build._`
+      : `*[${artistName.toUpperCase()} — PORTFOLIO REVIEW]*\n\nReilly's review was generated but the Google Doc could not be created. Check Render logs.\n\nArtist: ${artistName}\nWebsite: ${websiteUrl}`;
+
+    const slackRes = await fetch('https://slack.com/api/chat.postMessage', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${SLACK_BOT_TOKEN}`,
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({
-        channel: SLACK_CHANNEL,
-        text: `*[${artistName.toUpperCase()} — PORTFOLIO REVIEW]*\n\nReilly's review is ready. The full text is attached as a file below.\n\n_Download, paste into a Google Doc, have Reilly review and edit, then trigger the HTML build when ready._`
-      })
+      body: JSON.stringify({ channel: SLACK_CHANNEL, text: slackText })
     });
-    const notifyData = await notifyRes.json();
-    console.log('Slack notification posted, channel:', notifyData.channel);
-
-    // ── UPLOAD REVIEW AS SLACK FILE ──
-    const fileName = `${artistName.replace(/\s+/g, '_')}_Portfolio_Review.txt`;
-    const fileBytes = Buffer.byteLength(reviewText, 'utf8');
-
-    const uploadUrlRes = await fetch('https://slack.com/api/files.getUploadURLExternal', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${SLACK_BOT_TOKEN}`,
-        'Content-Type': 'application/x-www-form-urlencoded'
-      },
-      body: new URLSearchParams({
-        filename: fileName,
-        length: fileBytes.toString()
-      })
-    });
-    const uploadUrlData = await uploadUrlRes.json();
-    console.log('Upload URL response:', JSON.stringify(uploadUrlData));
-
-    if (uploadUrlData.ok) {
-      await fetch(uploadUrlData.upload_url, {
-        method: 'POST',
-        headers: { 'Content-Type': 'text/plain' },
-        body: reviewText
-      });
-      console.log('File content uploaded');
-
-      const completeRes = await fetch('https://slack.com/api/files.completeUploadExternal', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${SLACK_BOT_TOKEN}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          files: [{ id: uploadUrlData.file_id, title: `${artistName} — Portfolio Review` }],
-          channel_id: notifyData.channel,
-          initial_comment: `Full review text for ${artistName}`
-        })
-      });
-      const completeData = await completeRes.json();
-      console.log('File complete response:', JSON.stringify(completeData));
-    } else {
-      console.log('File upload failed, falling back to message chunks');
-      const chunks = reviewText.match(/.{1,3000}/gs) || [];
-      for (const chunk of chunks) {
-        await fetch('https://slack.com/api/chat.postMessage', {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${SLACK_BOT_TOKEN}`,
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({ channel: SLACK_CHANNEL, text: chunk })
-        });
-      }
-    }
-
+    const slackData = await slackRes.json();
+    console.log('Slack response:', JSON.stringify(slackData));
     console.log(`PPR generated and delivered for ${artistName}`);
 
   } catch (err) {
@@ -401,4 +466,4 @@ Niche Master Course Workflow | Find Your True Audience`;
 });
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`PPR server v2.1 running on port ${PORT}`));
+app.listen(PORT, () => console.log(`PPR server v2.2 running on port ${PORT}`));
