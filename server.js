@@ -9,16 +9,12 @@ app.use((req, res, next) => {
 });
 
 const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY;
-const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
 const SLACK_BOT_TOKEN = process.env.SLACK_BOT_TOKEN;
-const GOOGLE_SERVICE_ACCOUNT = process.env.GOOGLE_SERVICE_ACCOUNT;
-const GITHUB_REPO = 'indraASF/ppr-deliverables';
 const SLACK_CHANNEL = 'portfolio-reviews';
-const GDRIVE_FOLDER_ID = '120HCA9vLsS7iQkPWdm7X6xyib480uRtq';
 
 // ── HEALTH CHECK ──
 app.get('/', (req, res) => {
-  res.send('PPR Pipeline v2.0 is running.');
+  res.send('PPR Pipeline v2.1 is running.');
 });
 
 // ── CHECKLIST PARSER ──
@@ -33,7 +29,6 @@ app.post('/generate', async (req, res) => {
   console.log('Generate endpoint hit');
   const data = req.body;
 
-  // ── ARTIST FORM DATA ──
   const artistName = data.name || 'Unknown Artist';
   const firstName = artistName.split(' ')[0];
   const websiteUrl = data.website || '';
@@ -51,7 +46,6 @@ app.post('/generate', async (req, res) => {
   const collectorVision = data.collector_vision || '';
   const additionalNotes = data.additional_notes || 'None';
 
-  // ── CHECKLIST DATA ──
   const wcAbout = parseChecklist(data.wc_about);
   const wcFaq = parseChecklist(data.wc_faq);
   const wcContact = parseChecklist(data.wc_contact);
@@ -91,13 +85,10 @@ app.post('/generate', async (req, res) => {
   console.log('Website:', websiteUrl);
   console.log('Instagram:', instagramUrl);
 
-  // Acknowledge immediately so Make doesn't time out
   res.status(200).json({ status: 'processing', artist: artistName });
 
   try {
-    // ── BUILD CHECKLIST STRINGS ──
-    const websiteContentChecklist = `
-WEBSITE & CONTENT:
+    const websiteContentChecklist = `WEBSITE & CONTENT:
 ${wcAbout === 'PASS' ? 'PASS' : 'FAIL'}  About / Artist Bio page visible in navigation
 ${wcFaq === 'PASS' ? 'PASS' : 'FAIL'}  FAQ page present
 ${wcContact === 'PASS' ? 'PASS' : 'FAIL'}  Contact page or visible email address
@@ -110,8 +101,7 @@ ${wcPortrait === 'PASS' ? 'PASS' : 'FAIL'}  Artist portrait present
 ${wcStudio === 'PASS' ? 'PASS' : 'FAIL'}  Photo of artist working or studio environment
 ${wcNotes ? 'Additional notes: ' + wcNotes : ''}`.trim();
 
-    const shopChecklist = `
-SHOP & PRODUCT:
+    const shopChecklist = `SHOP & PRODUCT:
 ${spWorks === 'PASS' ? 'PASS' : 'FAIL'}  Minimum 10 works listed and available to view
 ${spOrganized === 'PASS' ? 'PASS' : 'FAIL'}  Originals and/or limited editions clearly organized
 ${spFeatured === 'PASS' ? 'PASS' : 'FAIL'}  Best Sellers or Featured Works category present
@@ -123,15 +113,13 @@ ${spPrints === 'PASS' ? 'PASS' : 'FAIL'}  Print size options present
 ${spLinked === 'PASS' ? 'PASS' : 'FAIL'}  Original artwork linked to available prints
 ${spNotes ? 'Additional notes: ' + spNotes : ''}`.trim();
 
-    const pricingChecklist = `
-PRICING:
+    const pricingChecklist = `PRICING:
 ${prPricing === 'PASS' ? 'PASS' : 'FAIL'}  Pricing structure appropriate for current market stage
 ${prLeadCapture === 'PASS' ? 'PASS' : 'FAIL'}  Lead Capture tool active
 ${prAnnouncement === 'PASS' ? 'PASS' : 'FAIL'}  Announcement bar present
 ${prNotes ? 'Additional notes: ' + prNotes : ''}`.trim();
 
-    const instagramChecklist = `
-INSTAGRAM:
+    const instagramChecklist = `INSTAGRAM:
 ${igBio === 'PASS' ? 'PASS' : 'FAIL'}  Bio includes medium, location, and link to website
 ${igProfile === 'PASS' ? 'PASS' : 'FAIL'}  Profile image is professional
 ${igCadence === 'PASS' ? 'PASS' : 'FAIL'}  Consistent posting cadence evident from grid
@@ -141,7 +129,6 @@ ${igEngagement === 'PASS' ? 'PASS' : 'FAIL'}  Community engagement visible
 ${igStudio === 'PASS' ? 'PASS' : 'FAIL'}  Studio or behind-the-scenes content present
 ${igNotes ? 'Additional notes: ' + igNotes : ''}`.trim();
 
-    // ── BUILD CREDENTIALS STRING ──
     let credentials = '';
     if (exhibitionHistory && exhibitionHistory.toLowerCase() !== 'none' && exhibitionHistory.toLowerCase() !== 'no' && exhibitionHistory.trim() !== '') {
       credentials += `Exhibition history: ${exhibitionHistory}\n`;
@@ -154,7 +141,6 @@ ${igNotes ? 'Additional notes: ' + igNotes : ''}`.trim();
     }
     if (credentials === '') credentials = 'No credentials provided — do not mention in the artist statement.';
 
-    // ── MEGA PROMPT v2.0 ──
     const prompt = `You are generating a Professional Portfolio Review on behalf of Reilly Thomson, an art consultant currently at David Zwirner gallery in New York as Project Coordinator and Sales Support. He manages multi-phase exhibitions for blue-chip artists at venues including The British Museum, Musee National Picasso, Deste Foundation, Art Basel, Frieze, and Unlimited. He builds visual presentations for the Top 200 Collectors worldwide driving seven-figure sales. Previously Communications Director at M+B Gallery LA where he grew Instagram 54% and engagement 121%, securing placements in American Vogue and Architectural Digest. BA English Summa Cum Laude UCLA GPA 3.95.
 
 ARTIST INFORMATION:
@@ -315,7 +301,6 @@ Best Practices for Selling Limited Editions
 The Live Art Show Playbook (3.0)
 Niche Master Course Workflow | Find Your True Audience`;
 
-    // ── CALL CLAUDE ──
     const claudeRes = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
       headers: {
@@ -338,85 +323,8 @@ Niche Master Course Workflow | Find Your True Audience`;
     const reviewText = claudeData.content[0].text;
     console.log('Claude generated review successfully');
 
-    // ── CREATE GOOGLE DOC ──
-    let docUrl = null;
-    try {
-      const serviceAccount = JSON.parse(GOOGLE_SERVICE_ACCOUNT);
-      console.log('Service account email:', serviceAccount.client_email);
-
-      const jwt = await createJWT(serviceAccount);
-      const tokenRes = await fetch('https://oauth2.googleapis.com/token', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: new URLSearchParams({
-          grant_type: 'urn:ietf:params:oauth:grant-type:jwt-bearer',
-          assertion: jwt
-        })
-      });
-      const tokenData = await tokenRes.json();
-      console.log('Token response:', JSON.stringify(tokenData));
-
-      if (!tokenData.access_token) {
-        throw new Error('Failed to get access token: ' + JSON.stringify(tokenData));
-      }
-      const accessToken = tokenData.access_token;
-
-      // Create the Google Doc
-      const docRes = await fetch('https://docs.googleapis.com/v1/documents', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${accessToken}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ title: `${artistName} — Portfolio Review` })
-      });
-      const docData = await docRes.json();
-      console.log('Doc creation response:', JSON.stringify(docData));
-
-      const docId = docData.documentId;
-      if (!docId) {
-        throw new Error('No documentId returned: ' + JSON.stringify(docData));
-      }
-
-      // Insert the review text
-      const insertRes = await fetch(`https://docs.googleapis.com/v1/documents/${docId}:batchUpdate`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${accessToken}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          requests: [{ insertText: { location: { index: 1 }, text: reviewText } }]
-        })
-      });
-      const insertData = await insertRes.json();
-      console.log('Insert text response:', JSON.stringify(insertData));
-
-      // Move to PPR Reviews In Progress folder
-      const moveRes = await fetch(`https://www.googleapis.com/drive/v3/files/${docId}?addParents=${GDRIVE_FOLDER_ID}&removeParents=root`, {
-        method: 'PATCH',
-        headers: {
-          'Authorization': `Bearer ${accessToken}`,
-          'Content-Type': 'application/json'
-        }
-      });
-      const moveData = await moveRes.json();
-      console.log('Move to folder response:', JSON.stringify(moveData));
-
-      docUrl = `https://docs.google.com/document/d/${docId}/edit`;
-      console.log('Google Doc created successfully:', docUrl);
-
-    } catch (docErr) {
-      console.error('Google Doc creation error:', docErr.message);
-      docUrl = null;
-    }
-
-    // ── POST TO SLACK ──
-    const slackText = docUrl
-      ? `*[${artistName.toUpperCase()} — PORTFOLIO REVIEW]*\n\nReilly's review is ready for editing.\n\n*Google Doc:* ${docUrl}\n\n_Once edits are complete, move the Doc to the "Ready to Publish" folder to trigger the HTML build._`
-      : `*[${artistName.toUpperCase()} — PORTFOLIO REVIEW]*\n\nReilly's review was generated but the Google Doc could not be created. Check Render logs.\n\nArtist: ${artistName}\nWebsite: ${websiteUrl}`;
-
-    const slackRes = await fetch('https://slack.com/api/chat.postMessage', {
+    // ── POST NOTIFICATION TO SLACK ──
+    const notifyRes = await fetch('https://slack.com/api/chat.postMessage', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${SLACK_BOT_TOKEN}`,
@@ -424,11 +332,67 @@ Niche Master Course Workflow | Find Your True Audience`;
       },
       body: JSON.stringify({
         channel: SLACK_CHANNEL,
-        text: slackText
+        text: `*[${artistName.toUpperCase()} — PORTFOLIO REVIEW]*\n\nReilly's review is ready. The full text is attached as a file below.\n\n_Download, paste into a Google Doc, have Reilly review and edit, then trigger the HTML build when ready._`
       })
     });
-    const slackData = await slackRes.json();
-    console.log('Slack response:', JSON.stringify(slackData));
+    const notifyData = await notifyRes.json();
+    console.log('Slack notification posted, channel:', notifyData.channel);
+
+    // ── UPLOAD REVIEW AS SLACK FILE ──
+    const fileName = `${artistName.replace(/\s+/g, '_')}_Portfolio_Review.txt`;
+    const fileBytes = Buffer.byteLength(reviewText, 'utf8');
+
+    const uploadUrlRes = await fetch('https://slack.com/api/files.getUploadURLExternal', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${SLACK_BOT_TOKEN}`,
+        'Content-Type': 'application/x-www-form-urlencoded'
+      },
+      body: new URLSearchParams({
+        filename: fileName,
+        length: fileBytes.toString()
+      })
+    });
+    const uploadUrlData = await uploadUrlRes.json();
+    console.log('Upload URL response:', JSON.stringify(uploadUrlData));
+
+    if (uploadUrlData.ok) {
+      await fetch(uploadUrlData.upload_url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain' },
+        body: reviewText
+      });
+      console.log('File content uploaded');
+
+      const completeRes = await fetch('https://slack.com/api/files.completeUploadExternal', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${SLACK_BOT_TOKEN}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          files: [{ id: uploadUrlData.file_id, title: `${artistName} — Portfolio Review` }],
+          channel_id: notifyData.channel,
+          initial_comment: `Full review text for ${artistName}`
+        })
+      });
+      const completeData = await completeRes.json();
+      console.log('File complete response:', JSON.stringify(completeData));
+    } else {
+      console.log('File upload failed, falling back to message chunks');
+      const chunks = reviewText.match(/.{1,3000}/gs) || [];
+      for (const chunk of chunks) {
+        await fetch('https://slack.com/api/chat.postMessage', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${SLACK_BOT_TOKEN}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ channel: SLACK_CHANNEL, text: chunk })
+        });
+      }
+    }
+
     console.log(`PPR generated and delivered for ${artistName}`);
 
   } catch (err) {
@@ -436,25 +400,5 @@ Niche Master Course Workflow | Find Your True Audience`;
   }
 });
 
-// ── JWT HELPER FOR GOOGLE AUTH ──
-async function createJWT(serviceAccount) {
-  const crypto = require('crypto');
-  const header = Buffer.from(JSON.stringify({ alg: 'RS256', typ: 'JWT' })).toString('base64url');
-  const now = Math.floor(Date.now() / 1000);
-  const payload = Buffer.from(JSON.stringify({
-    iss: serviceAccount.client_email,
-    scope: 'https://www.googleapis.com/auth/documents https://www.googleapis.com/auth/drive',
-    aud: 'https://oauth2.googleapis.com/token',
-    exp: now + 3600,
-    iat: now
-  })).toString('base64url');
-
-  const signingInput = `${header}.${payload}`;
-  const sign = crypto.createSign('RSA-SHA256');
-  sign.update(signingInput);
-  const signature = sign.sign(serviceAccount.private_key, 'base64url');
-  return `${signingInput}.${signature}`;
-}
-
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`PPR server v2.0 running on port ${PORT}`));
+app.listen(PORT, () => console.log(`PPR server v2.1 running on port ${PORT}`));
