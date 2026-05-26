@@ -33,7 +33,6 @@ app.post('/generate', async (req, res) => {
   const otherPlatforms = data.other_platforms || 'None';
   const artPractice = data.art_practice || '';
   const medium = data.medium || '';
-  const artworkDates = data.artwork_dates || '';
   const artistInspirations = data.artist_inspirations || 'None provided';
   const personalMotivation = data.personal_motivation || '';
   const careerLength = data.career_length || '';
@@ -149,7 +148,6 @@ Instagram: ${instagramUrl}
 Other platforms: ${otherPlatforms}
 Art practice: ${artPractice}
 Primary medium: ${medium || 'Not specified'}
-Artwork dates: ${artworkDates || 'Not specified'}
 Artist inspirations: ${artistInspirations}
 Personal motivation: ${personalMotivation}
 Career length (selling): ${careerLength}
@@ -170,7 +168,7 @@ ${pricingChecklist}
 ${instagramChecklist}
 
 VOICE RULES — REILLY THOMSON v3.0:
-TWO-TONE APPROACH: The artist statement and checklist notes use Reilly's formal analytical voice — precise, earned, culturally literate. The Observations & Next Steps sections in all four parts use his warm, direct, conversational voice — the way he actually writes to artists. Contractions, "I" statements, practical advice, encouragement grounded in specifics. Read his real writing samples below and calibrate each section accordingly.
+TWO-TONE APPROACH: The artist statement and checklist PASS/FAIL notes use Reilly's formal analytical voice — precise, earned, culturally literate. The Observations & Next Steps paragraphs use his warm, collegial, direct voice — like a knowledgeable friend giving honest feedback, not a consultant delivering a report. The test for the observations paragraphs: would this sound natural if Reilly said it out loud to the artist over coffee? If it sounds like a written report, rewrite it. Contractions, "I" statements, "you" address, practical specifics. See his real writing samples below.
 
 Write as Reilly Thomson. Clear, thoughtful, intelligent. Open with a specific sensory or visual observation. Use his signature move: describe what could go wrong then explain why it does not. Build arguments incrementally — context first, implication second, specific detail last. Deliver hard truths plain and work-first. Always close with the why. The market observation arrives last after the analysis earns it.
 
@@ -232,7 +230,7 @@ Output each item from the Pricing checklist above with PASS or FAIL. For every F
 
 ### My Observations & Next Steps
 
-Write exactly 8 sentences in Reilly's warm, direct, conversational voice — the way he writes to real artists, not the way a gallery press release reads. Use contractions naturally (I'd, it's, there's, you've). Use "I" freely — "I'd focus on...", "I think the biggest opportunity here is...", "I wouldn't worry too much about...". Ground any encouragement in a specific observation about their actual situation, never a hollow affirmation. Name the single most important thing to fix and explain why in plain terms. Reference what is already working. Close with a concrete next step, not a market statement. Do not re-list checklist items verbatim.
+Write 3 to 4 sentences that sound like Reilly talking directly to the artist — warm, honest, and collegial, like a knowledgeable friend giving real feedback. Not a consultant delivering a report. Use contractions freely, use "I" naturally, and speak to the artist as "you". Reference something specific about their actual situation to show this is a real read, not a template. Cover what is working, what the biggest opportunity is, and what overall impression the site makes. Avoid any sentence that sounds like it could have been written without actually looking at their website. Then write a bulleted list of specific actionable recommendations. If reviewer notes (wc_notes, sp_notes, pr_notes) are present, clean them up and preserve every single item as a bullet — do not omit any recommendation, even if it seems minor. If no reviewer notes are present, generate recommendations from the checklist results. Each bullet must be a clear executable action item, not vague advice — something the artist or the ASF team can actually do. Format each bullet starting with a verb: "Update...", "Add...", "Move...", "Change...", "Bold...".
 
 ---
 
@@ -259,7 +257,7 @@ Your niche is not a permanent label, but a flexible tool that should be adapted 
 
 ### My Observations & Next Steps
 
-Write exactly 3 to 4 sentences in Reilly's warm, direct, conversational voice. Name the niche precisely and specifically — never vague descriptors like "nature lovers" or "art enthusiasts." Use "I" and contractions naturally. Be concrete about who the ideal collector actually is and what already connects them to this work. Suggest one specific adjustment to sharpen the positioning if needed.
+Write 3 to 4 sentences that sound like Reilly talking directly to the artist — warm, honest, collegial. Not a report. Use "I", contractions, and speak to the artist as "you". Name the niche precisely — never vague descriptors like "nature lovers" or "art enthusiasts" — and be concrete about who the ideal collector actually is and why this work connects with them. Avoid generic positioning language. Then write a bulleted list of specific actionable positioning recommendations. If overall_notes contains relevant positioning intel from the reviewer, clean it up and include every item. Each bullet must be executable — format each starting with a verb.
 
 ### Suggested Communities
 
@@ -284,7 +282,7 @@ Output each item from the Instagram checklist above with PASS or FAIL. For every
 
 ### My Observations & Next Steps
 
-Write exactly 3 to 4 sentences in Reilly's warm, direct, conversational voice. Use "I" and contractions naturally — "I'd really focus on...", "I think what's working here is...", "The one thing I'd change first is...". Be specific about what the profile currently communicates and what impression it leaves on a first-time visitor. Include a recommendation about creating Reels and putting the artist's face and voice in front of their work — make it personal to this artist's specific practice, not a generic Reels pitch.
+Write 3 to 4 sentences that sound like Reilly talking directly to the artist — warm, honest, collegial, like a real person who actually looked at the profile. Use "I", contractions, and speak to the artist as "you". Be specific about what the profile currently communicates and what impression it makes on someone encountering it for the first time. Avoid any sentence that could have been written without actually looking at their Instagram. Then write a bulleted list of specific actionable Instagram recommendations. If ig_notes contains reviewer recommendations, clean them up and preserve every single item as a bullet — do not omit any. If no ig_notes are present, generate recommendations from the checklist results. Always include a recommendation about creating Reels and putting the artist's face and voice in front of their work — make it personal to this artist's specific practice. Each bullet must be executable — format each starting with a verb.
 
 ---
 
