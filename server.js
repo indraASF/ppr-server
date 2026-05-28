@@ -175,7 +175,7 @@ Write as Reilly Thomson. Clear, thoughtful, intelligent. Open with a specific se
 BANNED WORDS AND PHRASES — HARD RULE. Treat this as an absolute filter. Before finalizing any sentence, check it against this list. If any banned word or phrase appears anywhere in your output, rewrite that sentence before continuing. There are no exceptions.
 
 BANNED PUNCTUATION & STRUCTURE:
-- Em dashes (never, not once, not anywhere)
+- Em dashes — ABOLISH ENTIRELY. The em dash character (—) must never appear anywhere in your output. Not in observations, not in the artist statement, not in bullet points, not in subheadings, not anywhere. If you feel the urge to use an em dash, use a comma, a period, or rewrite the sentence. Before submitting your output, do a dedicated scan for the — character and remove every instance. This is a zero-tolerance rule.
 - Short standalone sentences for dramatic effect ("That's not an accident." / "That matters.")
 - Rhetorical questions of any kind
 - Lists of three with parallel structure ("bold, confident, and unapologetic")
@@ -207,7 +207,10 @@ BANNED FRAMING:
 - Never write anything that could appear unedited on a Wikipedia page
 - If a sentence could have been written without actually looking at this artist's work, cut it
 
-SELF-CHECK BEFORE OUTPUTTING: Scan your full output for every word on the banned list above. If you find any, rewrite before delivering.
+SELF-CHECK BEFORE OUTPUTTING — mandatory two-pass review:
+Pass 1: Scan for the em dash character (—). If you find even one, remove it and rewrite that sentence. Zero tolerance.
+Pass 2: Scan for every word on the banned list above. If you find any, rewrite before delivering.
+Do not skip this check. Do not deliver output until both passes are complete.
 
 CREDENTIALS RULE: If any credentials field says none, no, or none yet — DO NOT mention it anywhere in the document. Only reference credentials that actually exist.
 
@@ -241,7 +244,18 @@ Having worked at David Zwirner, I've seen firsthand what separates the artists w
 
 Every player in the art world, from collectors and advisors to gallerists and curators, will encounter your work through these same touchpoints. The quality of these materials will greatly influence the first impressions you make, and whether the right doors open.
 
-Write 2 additional paragraphs in Reilly's warm conversational voice that reference specific things discussed during the consultation call. Draw from the overall_notes field: "${overallNotes}". If overall_notes contains references to specific artworks, career moments, goals, or personal details mentioned during the call, weave those into a genuine personal opening that shows Reilly actually remembers and cares about this specific artist. Each paragraph should be 2-3 sentences. If overall_notes is empty or generic, write one warm paragraph referencing something specific from the artist's practice based on the other form fields. Write the actual paragraphs — no placeholder brackets in the output.
+PERSONALIZED INTRO — write 4 to 6 short paragraphs (2-3 sentences each) as a personal letter opening. Draw exclusively from overall_notes: "${overallNotes}". This is the most important field in the entire document. Treat every detail in overall_notes as gold — specific artworks mentioned, personal stories shared, goals stated, career milestones, life context. Reference them by name and with specificity. The test: would this intro only make sense for this specific artist? If it could apply to anyone, rewrite it.
+
+Style calibration — Reilly's actual intro style:
+- Opens with one warm simple line: "Hi [Name], it was really great speaking with you..."
+- No exclamation point after the greeting — just a comma and warmth
+- Uses "I" constantly and naturally: "I especially enjoyed...", "I also really admire...", "I kept thinking about...", "I loved hearing that..."
+- Short paragraphs — 2-3 sentences each, never dense blocks
+- References specific things from the call with real detail: a specific artwork, a personal story, a goal, a life moment
+- Ends with a simple practical transition: "I've laid everything out below in a clear, structured way so you can see exactly where things stand."
+- Never uses formal consulting language — this reads like a personal letter from someone who genuinely listened
+
+If overall_notes is sparse, draw from art_practice, personal_motivation, and career_length to write something personal. Never write a generic intro that could apply to any artist.
 
 ---
 
@@ -321,7 +335,15 @@ Write 3 to 4 sentences that sound like Reilly talking directly to the artist —
 
 ## Looking Ahead
 
-Write 2 to 3 paragraphs of 3 to 4 sentences each in Reilly's warm conversational voice as a conclusion to the full review. This is the final synthesis — pull together the strongest identified niche, the 2 to 3 highest-leverage opportunities across all four sections, and what the artist's practice could look like if they execute well. Be specific to this artist's actual situation. Be encouraging without overpromising. End on something that feels genuinely forward-looking and personal, not generic. Do not repeat specific recommendations already listed — speak to the bigger picture and the momentum that's possible.
+Write 3 paragraphs of 3 to 4 sentences each in Reilly's warm conversational voice. This is the most personal section of the document after the intro. Draw from overall_notes: "${overallNotes}" for specific details — goals stated, timelines mentioned, sales targets, life plans, personal stories. Reference them directly.
+
+Paragraph 1: Frame what makes this artist's position genuinely unique — what existing assets or credibility they already have that most artists spend years trying to build. Be specific to their actual situation.
+
+Paragraph 2: Name the single highest-leverage opportunity in concrete terms. Give a specific example of what executing on it actually looks like — name a specific artwork, a specific story, a specific action. Make it so vivid the artist can picture doing it.
+
+Paragraph 3: Close with something personal and forward-looking that only applies to this artist — reference a specific goal, timeline, or life detail from overall_notes if present. Create a sense of intentional momentum without overpromising outcomes.
+
+The test: every sentence should only make sense for this specific artist. If it could apply to anyone, rewrite it.
 
 ---
 
