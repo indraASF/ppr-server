@@ -97,7 +97,7 @@ ${wcDesign === 'PASS' ? 'PASS' : 'FAIL'}  Cohesive visual design
 ${wcSocial === 'PASS' ? 'PASS' : 'FAIL'}  Social media icons visible and linked correctly
 ${wcPortrait === 'PASS' ? 'PASS' : 'FAIL'}  Artist portrait present
 ${wcStudio === 'PASS' ? 'PASS' : 'FAIL'}  Photo of artist working or studio environment
-${wcNotes ? 'Additional notes: ' + wcNotes : ''}`.trim();
+${wcNotes ? `WEBSITE & CONTENT REVIEWER NOTES — MANDATORY. Every specific recommendation in these notes must appear as an action item in the Website Observations section. Do not omit, summarize, or generalize any item. These are Indra's direct observations from reviewing the artist's actual website: ${wcNotes}` : ''}`.trim();
 
     const shopChecklist = `SHOP & PRODUCT:
 ${spWorks === 'PASS' ? 'PASS' : 'FAIL'}  Minimum 10 works listed and available to view
@@ -109,13 +109,13 @@ ${spMockups === 'PASS' ? 'PASS' : 'FAIL'}  Wall preview or room mockup images pr
 ${spCheckout === 'PASS' ? 'PASS' : 'FAIL'}  Checkout button clearly visible
 ${spPrints === 'PASS' ? 'PASS' : 'FAIL'}  Print size options present
 ${spLinked === 'PASS' ? 'PASS' : 'FAIL'}  Original artwork linked to available prints
-${spNotes ? 'Additional notes: ' + spNotes : ''}`.trim();
+${spNotes ? `SHOP & PRODUCT REVIEWER NOTES — MANDATORY. Every specific recommendation in these notes must appear as an action item in the Website Observations section. Do not omit, summarize, or generalize any item: ${spNotes}` : ''}`.trim();
 
     const pricingChecklist = `PRICING:
 ${prPricing === 'PASS' ? 'PASS' : 'FAIL'}  Pricing structure appropriate for current market stage
 ${prLeadCapture === 'PASS' ? 'PASS' : 'FAIL'}  Lead Capture tool active
 ${prAnnouncement === 'PASS' ? 'PASS' : 'FAIL'}  Announcement bar present
-${prNotes ? 'Additional notes: ' + prNotes : ''}`.trim();
+${prNotes ? `PRICING REVIEWER NOTES — MANDATORY. Every specific recommendation in these notes must appear as an action item in the Website Observations section. Do not omit, summarize, or generalize any item: ${prNotes}` : ''}`.trim();
 
     const instagramChecklist = `INSTAGRAM:
 ${igBio === 'PASS' ? 'PASS' : 'FAIL'}  Bio includes medium, location, and link to website
@@ -125,7 +125,7 @@ ${igProcess === 'PASS' ? 'PASS' : 'FAIL'}  Process and in-progress content prese
 ${igCaptions === 'PASS' ? 'PASS' : 'FAIL'}  Finished work featured with thoughtful captions
 ${igEngagement === 'PASS' ? 'PASS' : 'FAIL'}  Community engagement visible
 ${igStudio === 'PASS' ? 'PASS' : 'FAIL'}  Studio or behind-the-scenes content present
-${igNotes ? 'Additional notes: ' + igNotes : ''}`.trim();
+${igNotes ? `INSTAGRAM REVIEWER NOTES — MANDATORY. Every specific recommendation in these notes must appear as an action item in the Instagram Observations section. Do not omit, summarize, or generalize any item. These are Indra's direct observations from reviewing the artist's actual Instagram: ${igNotes}` : ''}`.trim();
 
     let credentials = '';
     if (exhibitionHistory && exhibitionHistory.toLowerCase() !== 'none' && exhibitionHistory.toLowerCase() !== 'no' && exhibitionHistory.trim() !== '') {
@@ -156,7 +156,15 @@ Price of originals: ${priceOriginals}
 Price of prints: ${pricePrints}
 Collector vision: ${collectorVision}
 Additional notes: ${additionalNotes}
-${overallNotes ? 'Reviewer notes: ' + overallNotes : ''}
+${overallNotes ? `
+REVIEWER NOTES — MANDATORY SOURCE MATERIAL. These notes were taken during the live consultation call with this artist. Every specific detail, story, goal, timeline, number, and personal reference in these notes MUST appear somewhere in the output — in the intro, the conclusion, or the relevant section observations. Do not summarize, do not omit, do not generalize. If the notes mention a specific artwork, name it. If they mention a sales target, use it. If they mention a personal story, reference it. Treating these notes as optional or background context is a failure. They are the primary input for everything personal in this document.
+
+REVIEWER NOTES CONTENT:
+${overallNotes}
+
+END OF REVIEWER NOTES — now use every specific detail above in your output.
+` : 'No reviewer notes provided — draw from the artist form fields to write personal observations.'
+}
 
 CHECKLIST RESULTS (completed by internal reviewer):
 ${websiteContentChecklist}
@@ -244,7 +252,7 @@ Having worked at David Zwirner, I've seen firsthand what separates the artists w
 
 Every player in the art world, from collectors and advisors to gallerists and curators, will encounter your work through these same touchpoints. The quality of these materials will greatly influence the first impressions you make, and whether the right doors open.
 
-PERSONALIZED INTRO — write 4 to 6 short paragraphs (2-3 sentences each) as a personal letter opening. Draw exclusively from overall_notes: "${overallNotes}". This is the most important field in the entire document. Treat every detail in overall_notes as gold — specific artworks mentioned, personal stories shared, goals stated, career milestones, life context. Reference them by name and with specificity. The test: would this intro only make sense for this specific artist? If it could apply to anyone, rewrite it.
+PERSONALIZED INTRO — REVIEWER NOTES ARE YOUR SCRIPT. Re-read the REVIEWER NOTES above right now before writing a single word of the intro. Every paragraph must reference something specific from those notes. Write 4 to 6 short paragraphs (2-3 sentences each) as a personal letter opening. Draw exclusively from overall_notes: "${overallNotes}". This is the most important field in the entire document. Treat every detail in overall_notes as gold — specific artworks mentioned, personal stories shared, goals stated, career milestones, life context. Reference them by name and with specificity. The test: would this intro only make sense for this specific artist? If it could apply to anyone, rewrite it.
 
 Style calibration — Reilly's actual intro style:
 - Opens with one warm simple line: "Hi [Name], it was really great speaking with you..."
@@ -277,7 +285,7 @@ Output each item from the Pricing checklist above with PASS or FAIL. For every F
 
 ### My Observations & Next Steps
 
-Write 2 to 3 short focused paragraphs — not one long block — in Reilly's warm, collegial voice. Speak directly to the artist as "you", use "I" and contractions naturally. Paragraph 1: what is working and the overall impression the site makes. Paragraph 2: the areas that need improvement, with specific observations tied to this artist's actual situation. Paragraph 3: the single biggest missed opportunity or highest-leverage change. Each paragraph should be 2 to 3 sentences maximum. Avoid any sentence that could have been written without actually looking at their website. Then write a bulleted list of specific actionable recommendations organized under subheadings when there are 6 or more bullets. Prefix every subheading with "Action Items —" so they read: "Action Items — Branding & Positioning", "Action Items — Navigation & Site Organization", "Action Items — Collection Presentation", "Action Items — Typography & Readability", "Action Items — Hero Images & Visual Hierarchy" — only include subheadings that are relevant to this artist's actual recommendations. If reviewer notes (wc_notes, sp_notes, pr_notes) are present, clean them up and preserve every single item as a bullet — do not omit any recommendation, even if it seems minor. If no reviewer notes are present, generate recommendations from the checklist results. Each bullet must be a clear executable action item — format each starting with a verb: "Update...", "Add...", "Move...", "Change...", "Bold...", "Reorganize...", "Reduce...".
+MANDATORY: Before writing, re-read all REVIEWER NOTES above — WEBSITE & CONTENT, SHOP & PRODUCT, and PRICING notes. Every specific item in those notes must appear as an action item in the bullet list below. Write 2 to 3 short focused paragraphs — not one long block — in Reilly's warm, collegial voice. Speak directly to the artist as "you", use "I" and contractions naturally. Paragraph 1: what is working and the overall impression the site makes. Paragraph 2: the areas that need improvement, with specific observations tied to this artist's actual situation. Paragraph 3: the single biggest missed opportunity or highest-leverage change. Each paragraph should be 2 to 3 sentences maximum. Avoid any sentence that could have been written without actually looking at their website. Then write a bulleted list of specific actionable recommendations organized under subheadings when there are 6 or more bullets. Prefix every subheading with "Action Items —" so they read: "Action Items — Branding & Positioning", "Action Items — Navigation & Site Organization", "Action Items — Collection Presentation", "Action Items — Typography & Readability", "Action Items — Hero Images & Visual Hierarchy" — only include subheadings that are relevant to this artist's actual recommendations. If reviewer notes (wc_notes, sp_notes, pr_notes) are present, clean them up and preserve every single item as a bullet — do not omit any recommendation, even if it seems minor. If no reviewer notes are present, generate recommendations from the checklist results. Each bullet must be a clear executable action item — format each starting with a verb: "Update...", "Add...", "Move...", "Change...", "Bold...", "Reorganize...", "Reduce...".
 
 ---
 
@@ -329,13 +337,13 @@ Output each item from the Instagram checklist above with PASS or FAIL. For every
 
 ### My Observations & Next Steps
 
-Write 3 to 4 sentences that sound like Reilly talking directly to the artist — warm, honest, collegial, like a real person who actually looked at the profile. Use "I", contractions, and speak to the artist as "you". Be specific about what the profile currently communicates and what impression it makes on someone encountering it for the first time. Avoid any sentence that could have been written without actually looking at their Instagram. Then write a bulleted list of specific actionable Instagram recommendations under the subheading "Action Items — Instagram". If ig_notes contains reviewer recommendations, clean them up and preserve every single item as a bullet — do not omit any. If no ig_notes are present, generate recommendations from the checklist results. Always include a recommendation about creating Reels and putting the artist's face and voice in front of their work — make it personal to this artist's specific practice. Each bullet must be executable — format each starting with a verb.
+MANDATORY: Before writing, re-read the INSTAGRAM REVIEWER NOTES above. Every specific item in those notes must appear as an action item in the bullet list. CHECK REVIEWER NOTES before writing this section — if the notes mention anything about the artist's social media, personal presence, specific content they create, or audience engagement, use it here. Write 3 to 4 sentences that sound like Reilly talking directly to the artist — warm, honest, collegial, like a real person who actually looked at the profile. Use "I", contractions, and speak to the artist as "you". Be specific about what the profile currently communicates and what impression it makes on someone encountering it for the first time. Avoid any sentence that could have been written without actually looking at their Instagram. Then write a bulleted list of specific actionable Instagram recommendations under the subheading "Action Items — Instagram". If ig_notes contains reviewer recommendations, clean them up and preserve every single item as a bullet — do not omit any. If no ig_notes are present, generate recommendations from the checklist results. Always include a recommendation about creating Reels and putting the artist's face and voice in front of their work — make it personal to this artist's specific practice. Each bullet must be executable — format each starting with a verb.
 
 ---
 
 ## Looking Ahead
 
-Write 3 paragraphs of 3 to 4 sentences each in Reilly's warm conversational voice. This is the most personal section of the document after the intro. Draw from overall_notes: "${overallNotes}" for specific details — goals stated, timelines mentioned, sales targets, life plans, personal stories. Reference them directly.
+CONCLUSION — REVIEWER NOTES ARE YOUR SCRIPT. Re-read the REVIEWER NOTES above right now before writing a single word. Every paragraph must reference something specific from those notes. Write 3 paragraphs of 3 to 4 sentences each in Reilly's warm conversational voice. This is the most personal section of the document after the intro. Draw from overall_notes: "${overallNotes}" for specific details — goals stated, timelines mentioned, sales targets, life plans, personal stories. Reference them directly.
 
 Paragraph 1: Frame what makes this artist's position genuinely unique — what existing assets or credibility they already have that most artists spend years trying to build. Be specific to their actual situation.
 
