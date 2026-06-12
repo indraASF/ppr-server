@@ -283,24 +283,21 @@ Professional Portfolio Review with Reilly Thomson
 Prepared by Reilly Thomson · Art Storefronts
 Your practice, evaluated at gallery standard.
 
-Hi ${firstName}! It was a pleasure to learn more about your work in our consultation. I've spent time looking further into your artworks and online presence since we spoke, and put together this full audit with my honest assessment of where your art business stands today.
+## INTRODUCTION — WRITE THIS ENTIRE SECTION FROM SCRATCH
 
-Having worked at David Zwirner, I've seen firsthand what separates the artists who get taken seriously from those who don't. This audit embodies my process for making an artist's business gallery standard. I evaluated your business across four crucial areas: website and public presence, artist statement, niche and positioning, and social media strategy.
+There is no static template text for this section. You must write the full introduction yourself, 6 to 8 short paragraphs total (2-3 sentences each), following this structure:
 
-Every player in the art world, from collectors and advisors to gallerists and curators, will encounter your work through these same touchpoints. The quality of these materials will greatly influence the first impressions you make, and whether the right doors open.
+PARAGRAPH 1 — REQUIRED, PERSONAL OPENING: Re-read the REVIEWER NOTES above right now before writing anything. Open with "Hi ${firstName}, it was really great speaking with you..." — no exclamation point, just a comma and warmth. Reference something specific from the REVIEWER NOTES immediately.
 
-PERSONALIZED INTRO — REVIEWER NOTES ARE YOUR SCRIPT. Re-read the REVIEWER NOTES above right now before writing a single word of the intro. Every paragraph must reference something specific from those notes. Write 4 to 6 short paragraphs (2-3 sentences each) as a personal letter opening. Draw exclusively from overall_notes: "${overallNotes}". This is the most important field in the entire document. Treat every detail in overall_notes as gold — specific artworks mentioned, personal stories shared, goals stated, career milestones, life context. Reference them by name and with specificity. The test: would this intro only make sense for this specific artist? If it could apply to anyone, rewrite it.
+PARAGRAPHS 2-4 — REQUIRED, MORE PERSONAL CONTENT: Continue drawing from REVIEWER NOTES. Treat every detail in overall_notes as gold — specific artworks mentioned, personal stories shared, goals stated, career milestones, life context. Reference them by name and with specificity. Use "I" constantly and naturally: "I especially enjoyed...", "I also really admire...", "I kept thinking about...", "I loved hearing that...". The test: would these paragraphs only make sense for this specific artist? If they could apply to anyone, rewrite them. If overall_notes is sparse, draw from art_practice, personal_motivation, and career_length instead — never write something generic.
 
-Style calibration — Reilly's actual intro style:
-- Opens with one warm simple line: "Hi [Name], it was really great speaking with you..."
-- No exclamation point after the greeting — just a comma and warmth
-- Uses "I" constantly and naturally: "I especially enjoyed...", "I also really admire...", "I kept thinking about...", "I loved hearing that..."
-- Short paragraphs — 2-3 sentences each, never dense blocks
-- References specific things from the call with real detail: a specific artwork, a personal story, a goal, a life moment
-- Ends with a simple practical transition: "I've laid everything out below in a clear, structured way so you can see exactly where things stand."
-- Never uses formal consulting language — this reads like a personal letter from someone who genuinely listened
+PARAGRAPH 5 — REQUIRED, CREDENTIAL CONTEXT: Include Reilly's professional framing in his own words — something like "Having worked at David Zwirner, I've seen firsthand what separates the artists who get taken seriously from those who don't. This audit embodies my process for making an artist's business gallery standard. I evaluated your business across four crucial areas: website and public presence, artist statement, niche and positioning, and social media strategy." Adapt the wording naturally so it flows from the personal paragraphs before it — do not paste this verbatim if it breaks the flow, rewrite it in your own words while keeping the same substance.
 
-If overall_notes is sparse, draw from art_practice, personal_motivation, and career_length to write something personal. Never write a generic intro that could apply to any artist.
+PARAGRAPH 6 — REQUIRED, STAKES: One short paragraph on why these materials matter — something like "Every player in the art world, from collectors and advisors to gallerists and curators, will encounter your work through these same touchpoints." Adapt naturally.
+
+FINAL PARAGRAPH — REQUIRED, TRANSITION: End with a simple practical line: "I've laid everything out below in a clear, structured way so you can see exactly where things stand."
+
+OVERALL STYLE: This reads like a personal letter from someone who genuinely listened during the consultation, not a formal report opening. Never uses formal consulting language. Short paragraphs throughout, never dense blocks. No bullet points anywhere in this section.
 
 ---
 
