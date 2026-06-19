@@ -1,5 +1,6 @@
 const express = require('express');
 const fetch = require('node-fetch');
+const axios = require('axios');
 const app = express();
 
 app.use(express.json({ limit: '10mb' }));
@@ -25,25 +26,26 @@ function parseChecklist(value) {
 async function callClaudeWithRetry(prompt, retries = 2) {
   for (let attempt = 0; attempt <= retries; attempt++) {
     try {
-      const claudeRes = await fetch('https://api.anthropic.com/v1/messages', {
-        method: 'POST',
-        headers: {
-          'x-api-key': ANTHROPIC_API_KEY,
-          'anthropic-version': '2023-06-01',
-          'content-type': 'application/json'
-        },
-        body: JSON.stringify({
-          model: 'claude-sonnet-4-20250514',
+      const response = await axios.post(
+        'https://api.anthropic.com/v1/messages',
+        {
+          model: 'claude-sonnet-4-6',
           max_tokens: 8000,
           messages: [{ role: 'user', content: prompt }]
-        }),
-        timeout: 120000
-      });
-      const claudeData = await claudeRes.json();
-      if (!claudeData.content || !claudeData.content[0]) {
-        throw new Error('Empty Claude response: ' + JSON.stringify(claudeData));
-      }
-      return claudeData.content[0].text;
+        },
+        {
+          headers: {
+            'x-api-key': ANTHROPIC_API_KEY,
+            'anthropic-version': '2023-06-01',
+            'content-type': 'application/json'
+          },
+          timeout: 120000,
+          decompress: true
+        }
+      );
+      const text = response.data?.content?.[0]?.text;
+      if (!text) throw new Error('Empty Claude response: ' + JSON.stringify(response.data));
+      return text;
     } catch (err) {
       console.error(`Claude attempt ${attempt + 1} failed:`, err.message);
       if (attempt === retries) throw err;
