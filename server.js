@@ -22,6 +22,36 @@ function parseChecklist(value) {
   return 'FAIL';
 }
 
+async function callClaudeWithRetry(prompt, retries = 2) {
+  for (let attempt = 0; attempt <= retries; attempt++) {
+    try {
+      const claudeRes = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: {
+          'x-api-key': ANTHROPIC_API_KEY,
+          'anthropic-version': '2023-06-01',
+          'content-type': 'application/json'
+        },
+        body: JSON.stringify({
+          model: 'claude-sonnet-4-20250514',
+          max_tokens: 8000,
+          messages: [{ role: 'user', content: prompt }]
+        }),
+        timeout: 120000
+      });
+      const claudeData = await claudeRes.json();
+      if (!claudeData.content || !claudeData.content[0]) {
+        throw new Error('Empty Claude response: ' + JSON.stringify(claudeData));
+      }
+      return claudeData.content[0].text;
+    } catch (err) {
+      console.error(`Claude attempt ${attempt + 1} failed:`, err.message);
+      if (attempt === retries) throw err;
+      await new Promise(r => setTimeout(r, 3000));
+    }
+  }
+}
+
 app.post('/generate', async (req, res) => {
   console.log('Generate endpoint hit');
   const data = req.body;
@@ -418,26 +448,7 @@ Best Practices for Selling Limited Editions
 The Live Art Show Playbook (3.0)
 Niche Master Course Workflow | Find Your True Audience`;
 
-    const claudeRes = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: {
-        'x-api-key': ANTHROPIC_API_KEY,
-        'anthropic-version': '2023-06-01',
-        'content-type': 'application/json'
-      },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 8000,
-        messages: [{ role: 'user', content: prompt }]
-      })
-    });
-
-    const claudeData = await claudeRes.json();
-    if (!claudeData.content || !claudeData.content[0]) {
-      console.error('Claude error:', JSON.stringify(claudeData));
-      return;
-    }
-    const reviewText = claudeData.content[0].text;
+    const reviewText = await callClaudeWithRetry(prompt);
     console.log('Claude generated review successfully');
 
     // ── POST NOTIFICATION TO SLACK ──
