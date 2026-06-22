@@ -321,17 +321,15 @@ Your practice, evaluated at gallery standard.
 
 ## INTRODUCTION — WRITE THIS ENTIRE SECTION FROM SCRATCH
 
-There is no static template text for this section. You must write the full introduction yourself, 6 to 8 short paragraphs total (2-3 sentences each), following this structure:
+There is no static template text for this section. You must write the full introduction yourself. Target 3 short paragraphs total — 2 to 4 sentences each. Do not try to cover everything from the notes. Pick the 2 or 3 most compelling, specific details and build around those. Less is more.
 
-PARAGRAPH 1 — REQUIRED, PERSONAL OPENING: Re-read the REVIEWER NOTES above right now before writing anything. Open with "Hi ${firstName}, it was really great speaking with you..." — no exclamation point, just a comma and warmth. Reference something specific from the REVIEWER NOTES immediately.
+PARAGRAPH 1 — REQUIRED, PERSONAL OPENING: Re-read the REVIEWER NOTES above right now before writing anything. Open with "Hi ${firstName}, it was really great speaking with you..." — no exclamation point, just a comma and warmth. Reference something specific from the REVIEWER NOTES immediately. Keep it to 2-3 sentences.
 
-PARAGRAPHS 2-4 — REQUIRED, MORE PERSONAL CONTENT: Continue drawing from REVIEWER NOTES. Treat every detail in overall_notes as gold — specific artworks mentioned, personal stories shared, goals stated, career milestones, life context. Reference them by name and with specificity. Use "I" constantly and naturally: "I especially enjoyed...", "I also really admire...", "I kept thinking about...", "I loved hearing that...". The test: would these paragraphs only make sense for this specific artist? If they could apply to anyone, rewrite them. If overall_notes is sparse, draw from art_practice, personal_motivation, and career_length instead — never write something generic.
+PARAGRAPHS 2-3 — REQUIRED, PERSONAL CONTENT: Continue drawing from REVIEWER NOTES. Pick the most distinctive and interesting details — a specific series, a material discovery, a commission, a philosophy, a personal story — and speak to them directly. Use "I" naturally: "I was particularly drawn to...", "I also think...", "Your X is a great way of...". The test: would this only make sense for this specific artist? If it could apply to anyone, cut it. Do not try to recap everything. Do not editorialize about what it "separates" this artist from others or what it "signals" to the market. Just speak to the work and the person.
 
-PARAGRAPH 5 — REQUIRED, STAKES: One short paragraph on why these materials matter — something like "Every player in the art world, from collectors and advisors to gallerists and curators, will encounter your work through these same touchpoints." Adapt naturally.
+FINAL LINE — REQUIRED, TRANSITION: End with a simple practical line: "I've laid everything out below in a clear, structured way so you can see exactly where things stand."
 
-FINAL PARAGRAPH — REQUIRED, TRANSITION: End with a simple practical line: "I've laid everything out below in a clear, structured way so you can see exactly where things stand."
-
-OVERALL STYLE: This reads like a personal letter from someone who genuinely listened during the consultation. Short paragraphs throughout, never dense blocks. No bullet points anywhere in this section.
+OVERALL STYLE: This reads like a personal letter from someone who actually listened. Short paragraphs. Warm but not effusive. No bullet points. No exclamation points. No grand claims about what makes this artist special or different from others.
 
 ---
 
@@ -370,7 +368,13 @@ A strong artist statement should include:
 
 ### ${artistName}'s Artist Statement
 
-Write the artist statement in Reilly's formal analytical voice. Structure it as 4 to 5 short paragraphs of 2 to 3 sentences each — never one long block. Each paragraph has a single focus: (1) the work itself and medium, (2) recurring motifs and visual language, (3) a specific formal or art historical observation, (4) the personal narrative and driving question, (5) credentials and mission if they exist. Open with a declaration about the work itself, not the biography. Include one earned art historical or cultural reference only if defensible — omit if not. Contain the personal narrative in a way that feels discovered not stated. End positioning the practice as part of a larger conversation. Write in third person throughout. First instance uses full name, every subsequent reference uses last name only. Never use "his/her" pronouns. Never use first person ("I", "my", "me") in the artist statement. CREDENTIALS RULE: only include exhibition history, education, or press if they were actually provided and are not blank or none.
+Write the artist statement in clean, confident third-person prose. Target 3 short paragraphs of 3 to 4 sentences each. Do not pad it. A tight statement is better than a long one.
+
+Structure: (1) Open with what the artist makes and how — medium, process, and the distinctive thing about it. Be specific and concrete. (2) The conceptual territory — recurring themes, visual language, what the work is actually exploring or doing. If there is a named series, lead with it. (3) Brief personal and professional grounding — how long they have been working, where they are based, and any exhibition history, awards, or credentials that were actually provided. CREDENTIALS RULE: only include exhibition history, awards, or education if they were explicitly provided in the form data and are not blank.
+
+Art historical references: only include if the connection is specific, defensible, and genuinely illuminating. If it feels like name-dropping, omit it entirely. Most statements do not need one.
+
+Write in third person throughout. First instance uses full name, every subsequent reference uses last name only. No pronouns. No first person.
 
 ---
 
@@ -380,7 +384,7 @@ Your niche is not a permanent label, but a flexible tool that should be adapted 
 
 ### My Observations & Next Steps
 
-CHECK REVIEWER NOTES before writing this section — if the notes mention anything about the artist's target audience, professional network, mission, or positioning, use it here. Write 3 to 4 sentences that sound like Reilly talking directly to the artist — warm, honest, collegial. Use "I", contractions, and speak to the artist as "you". Name the niche precisely — never vague descriptors like "nature lovers" or "art enthusiasts" — and be concrete about who the ideal collector actually is and why this work connects with them. Within the paragraph include at least one practical actionable suggestion the artist could act on immediately. Then write a bulleted list under "Action Items — Niche". If overall_notes contains relevant positioning intel, clean it up and include every item. Each bullet starts with a verb.
+CHECK REVIEWER NOTES before writing this section. Write 1 short paragraph — 3 to 4 sentences max — that sounds like Reilly talking directly to the artist after having actually thought about their situation. Keep it concise and direct. You can open with a natural callback like "As we discussed in the consultation call..." if it fits. Name the ideal collector precisely — not vague descriptors like "nature lovers" or "art enthusiasts" but specific people: interior designers working on luxury desert properties, collectors with backgrounds in engineering, corporate art buyers, etc. Be concrete about why this work connects with them specifically. Then write a bulleted list under "Action Items — Niche". If overall_notes contains relevant positioning intel, include it. Each bullet starts with a verb.
 
 ### Suggested Communities
 
@@ -405,21 +409,21 @@ Output each item from the Instagram checklist above with PASS or FAIL. For every
 
 ### My Observations & Next Steps
 
-MANDATORY: Before writing, re-read the INSTAGRAM REVIEWER NOTES above. Every specific item in those notes must appear as an action item in the bullet list. Write 3 to 4 sentences that sound like Reilly talking directly to the artist — warm, honest, collegial, like a real person who actually looked at the profile. Use "I", contractions, and speak to the artist as "you". Be specific about what the profile currently communicates and what impression it makes on someone encountering it for the first time. Avoid any sentence that could have been written without actually looking at their Instagram. Then write a bulleted list under "Action Items — Instagram". If ig_notes contains reviewer recommendations, preserve every single item as a bullet. Always include a Reels recommendation adapted to this artist's specific practice. Each bullet starts with a verb.
+MANDATORY: Before writing, re-read the INSTAGRAM REVIEWER NOTES above. Write 3 short paragraphs — 2 to 3 sentences each — that sound like Reilly talking directly to the artist after actually looking at their profile. Calm and direct, not promotional. No exclamation points. No words like "gold" or "incredibly" or "powerful." Start with one honest observation about what the profile currently communicates or what stood out. Then identify the single biggest opportunity. Then close with one specific content idea adapted to this artist's practice — something concrete they could actually film or post. Avoid any sentence that could have been written without actually looking at their Instagram. Then write a bulleted list under "Action Items — Instagram". Every specific item from ig_notes must appear as a bullet. Always include a Reels recommendation. Each bullet starts with a verb.
 
 ---
 
 ## Looking Ahead
 
-CONCLUSION — REVIEWER NOTES ARE YOUR SCRIPT. Re-read the REVIEWER NOTES above right now before writing a single word. Every paragraph must reference something specific from those notes. Write 3 paragraphs of 3 to 4 sentences each in Reilly's warm conversational voice. This is the most personal section of the document after the intro. Draw from overall_notes: "${overallNotes}" for specific details — goals stated, timelines mentioned, sales targets, life plans, personal stories. Reference them directly.
+CONCLUSION — Re-read the REVIEWER NOTES before writing. Write 3 to 4 paragraphs of prose — no bullets, no recaps of action items. This section zooms out. It is not a summary of what came before. It is Reilly speaking to the bigger picture of where this artist is and where they are going.
 
-Paragraph 1: Frame what makes this artist's situation worth paying attention to — what existing assets, credibility, or context they have that is relevant to their goals. Be specific. Do not compare them to other artists.
+Paragraph 1: Name what already exists — specific accomplishments, assets, or credibility this artist has built that are directly relevant to the next phase. Be specific. Reference actual details from the notes.
 
-Paragraph 2: Name one concrete opportunity in specific terms. Give a specific example of what executing on it actually looks like — name a specific artwork, a specific story, a specific action. Make it vivid enough that the artist can picture doing it.
+Paragraph 2: If you were prioritizing one area, what would it be and why? Name it directly and explain what executing on it actually looks like. Make it concrete enough that the artist can picture the next step.
 
-Paragraph 3: Close with something personal and forward-looking that only applies to this artist — reference a specific goal, timeline, or life detail from overall_notes if present. End on momentum without overpromising outcomes.
+Paragraph 3 (optional 4th): Connect to something personal from the notes — a goal, a timeline, a life detail. Frame the next phase as a natural extension of work already done, not a reinvention. End without overpromising. Momentum, not guarantees.
 
-The test: every sentence should only make sense for this specific artist. If it could apply to anyone, rewrite it. No bullet points — prose only.
+The test: every sentence should only make sense for this specific artist. No bullet points. No sentence that recaps a previous action item.
 
 ---
 
@@ -427,7 +431,7 @@ My recommendations are a starting point, not a final destination. The strongest 
 
 Spend as much time as you can in the studio, leaning into what about your practice excites you the most, and see where it takes you. And don't forget to tell your fans about your discoveries — we all want to know!
 
-I'm genuinely excited about what's ahead for you!
+I'm excited about what's ahead for you!
 
 — Reilly
 
