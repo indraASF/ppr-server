@@ -37,7 +37,8 @@ async function callClaudeWithRetry(prompt, retries = 2) {
         headers: {
           'x-api-key': ANTHROPIC_API_KEY,
           'anthropic-version': '2023-06-01',
-          'content-type': 'application/json'
+          'content-type': 'application/json',
+          'accept-encoding': 'identity'
         },
         body: JSON.stringify({
           model: 'claude-sonnet-4-6',
