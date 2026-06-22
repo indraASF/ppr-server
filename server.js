@@ -1,6 +1,5 @@
 const express = require('express');
 const fetch = require('node-fetch');
-const axios = require('axios');
 const app = express();
 
 app.use(express.json({ limit: '10mb' }));
@@ -26,25 +25,23 @@ function parseChecklist(value) {
 async function callClaudeWithRetry(prompt, retries = 2) {
   for (let attempt = 0; attempt <= retries; attempt++) {
     try {
-      const response = await axios.post(
-        'https://api.anthropic.com/v1/messages',
-        {
+      console.log(`Claude attempt ${attempt + 1}...`);
+      const response = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: {
+          'x-api-key': ANTHROPIC_API_KEY,
+          'anthropic-version': '2023-06-01',
+          'content-type': 'application/json'
+        },
+        body: JSON.stringify({
           model: 'claude-sonnet-4-6',
           max_tokens: 8000,
           messages: [{ role: 'user', content: prompt }]
-        },
-        {
-          headers: {
-            'x-api-key': ANTHROPIC_API_KEY,
-            'anthropic-version': '2023-06-01',
-            'content-type': 'application/json'
-          },
-          timeout: 120000,
-          decompress: true
-        }
-      );
-      const text = response.data?.content?.[0]?.text;
-      if (!text) throw new Error('Empty Claude response: ' + JSON.stringify(response.data));
+        })
+      });
+      const data = await response.json();
+      const text = data?.content?.[0]?.text;
+      if (!text) throw new Error('Empty Claude response: ' + JSON.stringify(data));
       return text;
     } catch (err) {
       console.error(`Claude attempt ${attempt + 1} failed:`, err.message);
@@ -195,8 +192,7 @@ REVIEWER NOTES CONTENT:
 ${overallNotes}
 
 END OF REVIEWER NOTES — now use every specific detail above in your output.
-` : 'No reviewer notes provided — draw from the artist form fields to write personal observations.'
-}
+` : 'No reviewer notes provided — draw from the artist form fields to write personal observations.'}
 
 CHECKLIST RESULTS (completed by internal reviewer):
 ${websiteContentChecklist}
@@ -246,7 +242,7 @@ BANNED TONE:
 - Never generate enthusiasm — report observations. If it feels like a sales pitch, rewrite it
 
 BANNED PHRASES — add these to the hard scan before output:
-- "Most artists spend years trying to..." (already banned — reinforce)
+- "Most artists spend years trying to..."
 - "You're in a unique position that..."
 - "That kind of X is something most artists never..."
 - "You have all the tools needed to..."
@@ -293,10 +289,10 @@ CREDENTIALS RULE: If any credentials field says none, no, or none yet — DO NOT
 
 NAME AND PRONOUN RULES: In the greeting use first name only. In the artist statement the first instance uses full name, every subsequent reference uses last name only. Never use "his/her" pronouns in the artist statement.
 
-REILLY REAL WRITING SAMPLES — calibrate the Observations & Next Steps sections against these, not the formal analytical sample below:
+REILLY REAL WRITING SAMPLES — calibrate the Observations & Next Steps sections against these:
 
 Sample 1 (encouraging, grounded in specifics):
-"I would not be discouraged at all by where you currently are. Selling work in both of the exhibitions you participated in is actually a very positive sign, especially this early on. Most artists take years before they begin finding any consistent audience at all. I'd focus primarily on Instagram rather than spreading yourself too thin across every platform. I'd post video reels of your process, and talk about the work directly to camera, letting people connect with you as the artist behind the paintings."
+"I would not be discouraged at all by where you currently are. Selling work in both of the exhibitions you participated in is actually a very positive sign, especially this early on. I'd focus primarily on Instagram rather than spreading yourself too thin across every platform. I'd post video reels of your process, and talk about the work directly to camera, letting people connect with you as the artist behind the paintings."
 
 Sample 2 (practical, direct, warm):
 "I'd focus heavily on developing your website and social media presence, sharing the work regularly, showing your process and personality, and building an audience that becomes just as invested in the work as you are. The more consistently you show up and develop a recognizable body of work around your strongest ideas and interests, the easier it becomes for collectors to connect with what you're doing."
@@ -305,7 +301,7 @@ Sample 3 (honest, specific, not preachy):
 "Frames are indeed very personal, and sometimes buyers fully love the artwork but simply want it to fit their own space or aesthetic more closely. One option could be offering originals unframed going forward, with framing available as an add-on at an additional cost. If you start noticing that multiple buyers consistently want different framing choices, I'd take that as a sign to offer the works unframed and treat framing as optional rather than standard."
 
 REILLY FORMAL WRITING SAMPLE — calibrate the artist statement and checklist notes against this:
-"What initially struck me about this work is the color. Purple, yellow, and green at this intensity could easily overwhelm each other, and yet here they create a harmonious camouflage across the surface. That balance speaks to your strong understanding of printmaking and large-scale composition. The black line work underneath holds the abstract color composition together nicely. The single plant in the foreground against the dense foliage behind it creates an interesting tension between planes. Due to the minimal negative space in the work, the viewer is pulled deeper into the work rather than allowed to observe it from a distance. While a lack of negative space can be overwhelming for a viewer, I think it works nicely here and lends an interesting pattern effect. The abundance of pattern across the surface moves the work away from photo-realism in an interesting direction. Rather than describing the subject, the patterns generate a vibrating energy that I think is worth exploring further. One idea: continue playing with the contrast between simple forms in the foreground and hyper-detailed backdrops, and see how far that vibration can be pushed. This work would appeal strongly to interior designers. It has the kind of energy and vibrancy that contributes something to a room rather than simply hanging in it."
+"What initially struck me about this work is the color. Purple, yellow, and green at this intensity could easily overwhelm each other, and yet here they create a harmonious camouflage across the surface. That balance speaks to your strong understanding of printmaking and large-scale composition. The black line work underneath holds the abstract color composition together nicely. The single plant in the foreground against the dense foliage behind it creates an interesting tension between planes. Due to the minimal negative space in the work, the viewer is pulled deeper into the work rather than allowed to observe it from a distance. While a lack of negative space can be overwhelming for a viewer, I think it works nicely here and lends an interesting pattern effect. The abundance of pattern across the surface moves the work away from photo-realism in an interesting direction. Rather than describing the subject, the patterns generate a vibrating energy that I think is worth exploring further."
 
 NOW GENERATE THE FULL DOCUMENT using this exact structure. Output clean text only — no marker labels, no commentary outside the document:
 
@@ -323,13 +319,13 @@ PARAGRAPH 1 — REQUIRED, PERSONAL OPENING: Re-read the REVIEWER NOTES above rig
 
 PARAGRAPHS 2-4 — REQUIRED, MORE PERSONAL CONTENT: Continue drawing from REVIEWER NOTES. Treat every detail in overall_notes as gold — specific artworks mentioned, personal stories shared, goals stated, career milestones, life context. Reference them by name and with specificity. Use "I" constantly and naturally: "I especially enjoyed...", "I also really admire...", "I kept thinking about...", "I loved hearing that...". The test: would these paragraphs only make sense for this specific artist? If they could apply to anyone, rewrite them. If overall_notes is sparse, draw from art_practice, personal_motivation, and career_length instead — never write something generic.
 
-PARAGRAPH 5 — REQUIRED, CREDENTIAL CONTEXT: Include Reilly's professional framing in his own words — something like "Having worked at David Zwirner, I've seen firsthand what separates the artists who get taken seriously from those who don't. This audit embodies my process for making an artist's business gallery standard. I evaluated your business across four crucial areas: website and public presence, artist statement, niche and positioning, and social media strategy." Adapt the wording naturally so it flows from the personal paragraphs before it — do not paste this verbatim if it breaks the flow, rewrite it in your own words while keeping the same substance.
+PARAGRAPH 5 — REQUIRED, CREDENTIAL CONTEXT: Include Reilly's professional framing — something like "Having worked at David Zwirner, I've seen firsthand what separates the artists who get taken seriously from those who don't. This audit covers four crucial areas: website and public presence, artist statement, niche and positioning, and social media strategy." Adapt the wording so it flows naturally from the personal paragraphs before it.
 
 PARAGRAPH 6 — REQUIRED, STAKES: One short paragraph on why these materials matter — something like "Every player in the art world, from collectors and advisors to gallerists and curators, will encounter your work through these same touchpoints." Adapt naturally.
 
 FINAL PARAGRAPH — REQUIRED, TRANSITION: End with a simple practical line: "I've laid everything out below in a clear, structured way so you can see exactly where things stand."
 
-OVERALL STYLE: This reads like a personal letter from someone who genuinely listened during the consultation, not a formal report opening. Never uses formal consulting language. Short paragraphs throughout, never dense blocks. No bullet points anywhere in this section.
+OVERALL STYLE: This reads like a personal letter from someone who genuinely listened during the consultation. Short paragraphs throughout, never dense blocks. No bullet points anywhere in this section.
 
 ---
 
@@ -351,7 +347,7 @@ Output each item from the Pricing checklist above with PASS or FAIL. For every F
 
 ### My Observations & Next Steps
 
-MANDATORY: Before writing, re-read all REVIEWER NOTES above — WEBSITE & CONTENT, SHOP & PRODUCT, and PRICING notes. Every specific item in those notes must appear as an action item in the bullet list below. Write 2 to 3 short focused paragraphs — not one long block — in Reilly's warm, collegial voice. Speak directly to the artist as "you", use "I" and contractions naturally. Paragraph 1: what is working and the overall impression the site makes. Paragraph 2: the areas that need improvement, with specific observations tied to this artist's actual situation. Paragraph 3: the single biggest missed opportunity or highest-leverage change. Each paragraph should be 2 to 3 sentences maximum. Avoid any sentence that could have been written without actually looking at their website. Then write a bulleted list of specific actionable recommendations organized under subheadings when there are 6 or more bullets. Prefix every subheading with "Action Items —" so they read: "Action Items — Branding & Positioning", "Action Items — Navigation & Site Organization", "Action Items — Collection Presentation", "Action Items — Typography & Readability", "Action Items — Hero Images & Visual Hierarchy" — only include subheadings that are relevant to this artist's actual recommendations. If reviewer notes (wc_notes, sp_notes, pr_notes) are present, clean them up and preserve every single item as a bullet — do not omit any recommendation, even if it seems minor. If no reviewer notes are present, generate recommendations from the checklist results. Each bullet must be a clear executable action item — format each starting with a verb: "Update...", "Add...", "Move...", "Change...", "Bold...", "Reorganize...", "Reduce...".
+MANDATORY: Before writing, re-read all REVIEWER NOTES above — WEBSITE & CONTENT, SHOP & PRODUCT, and PRICING notes. Every specific item in those notes must appear as an action item in the bullet list below. Write 2 to 3 short focused paragraphs in Reilly's warm, collegial voice. Speak directly to the artist as "you", use "I" and contractions naturally. Paragraph 1: what is working and the overall impression the site makes. Paragraph 2: the areas that need improvement, with specific observations tied to this artist's actual situation. Paragraph 3: the single most important change. Each paragraph 2 to 3 sentences maximum. Avoid any sentence that could have been written without actually looking at their website. Then write a bulleted list organized under subheadings prefixed with "Action Items —": "Action Items — Branding & Positioning", "Action Items — Navigation & Site Organization", "Action Items — Collection Presentation", "Action Items — Typography & Readability", "Action Items — Hero Images & Visual Hierarchy" — only include subheadings relevant to this artist. If reviewer notes (wc_notes, sp_notes, pr_notes) are present, preserve every single item as a bullet. Each bullet starts with a verb: "Update...", "Add...", "Move...", "Change...", "Bold...", "Reorganize...", "Reduce...".
 
 ---
 
@@ -368,7 +364,7 @@ A strong artist statement should include:
 
 ### ${artistName}'s Artist Statement
 
-Write the artist statement in Reilly's formal analytical voice. Structure it as 4 to 5 short paragraphs of 2 to 3 sentences each — never one long block. Each paragraph has a single focus: (1) the work itself and medium, (2) recurring motifs and visual language, (3) a specific formal or art historical observation, (4) the personal narrative and driving question, (5) credentials and mission if they exist. Open with a declaration about the work itself, not the biography. Include one earned art historical or cultural reference only if defensible — omit if not. Contain the personal narrative in a way that feels discovered not stated. End positioning the practice as part of a larger conversation. Write in third person throughout. First instance uses full name, every subsequent reference uses last name only. Never use "his/her" pronouns. Never use first person ("I", "my", "me") in the artist statement — it is written about the artist, not by them. CREDENTIALS RULE: only include exhibition history, education, or press if they were actually provided and are not blank or none.
+Write the artist statement in Reilly's formal analytical voice. Structure it as 4 to 5 short paragraphs of 2 to 3 sentences each — never one long block. Each paragraph has a single focus: (1) the work itself and medium, (2) recurring motifs and visual language, (3) a specific formal or art historical observation, (4) the personal narrative and driving question, (5) credentials and mission if they exist. Open with a declaration about the work itself, not the biography. Include one earned art historical or cultural reference only if defensible — omit if not. Contain the personal narrative in a way that feels discovered not stated. End positioning the practice as part of a larger conversation. Write in third person throughout. First instance uses full name, every subsequent reference uses last name only. Never use "his/her" pronouns. Never use first person ("I", "my", "me") in the artist statement. CREDENTIALS RULE: only include exhibition history, education, or press if they were actually provided and are not blank or none.
 
 ---
 
@@ -378,18 +374,18 @@ Your niche is not a permanent label, but a flexible tool that should be adapted 
 
 ### My Observations & Next Steps
 
-Write 3 to 4 sentences that sound like Reilly talking directly to the artist — warm, honest, collegial. Not a report. Use "I", contractions, and speak to the artist as "you". Name the niche precisely — never vague descriptors like "nature lovers" or "art enthusiasts" — and be concrete about who the ideal collector actually is and why this work connects with them. Avoid generic positioning language. Then write a bulleted list of specific actionable positioning recommendations under the subheading "Action Items — Niche". If overall_notes contains relevant positioning intel from the reviewer, clean it up and include every item. Each bullet must be executable — format each starting with a verb.
+CHECK REVIEWER NOTES before writing this section — if the notes mention anything about the artist's target audience, professional network, mission, or positioning, use it here. Write 3 to 4 sentences that sound like Reilly talking directly to the artist — warm, honest, collegial. Use "I", contractions, and speak to the artist as "you". Name the niche precisely — never vague descriptors like "nature lovers" or "art enthusiasts" — and be concrete about who the ideal collector actually is and why this work connects with them. Within the paragraph include at least one practical actionable suggestion the artist could act on immediately. Then write a bulleted list under "Action Items — Niche". If overall_notes contains relevant positioning intel, clean it up and include every item. Each bullet starts with a verb.
 
 ### Suggested Communities
 
 #### 5 Subreddits
-List 5 active relevant subreddits. For each include the name and one sentence on why it is relevant.
+List 5 active relevant subreddits. For each include the name and one sentence on why it is relevant. Only suggest subreddits that are well-known, large, and almost certainly still active — r/photography, r/Art, r/watercolor etc. Do not invent niche subreddits that may not exist.
 
 #### 5 Facebook Groups
-List 5 active Facebook Groups. For each include the name and one sentence on why it is relevant.
+List 5 Facebook Groups relevant to this artist's niche and collector audience. For each include the name and one sentence on why it is relevant. Prefer large well-known groups over niche ones that may not exist.
 
 #### 5 Instagram Accounts
-List 5 accounts the ideal collector likely follows. For each include the handle and one sentence on why it is strategically relevant.
+List 5 Instagram accounts the ideal collector likely follows. For each include the handle and one sentence on why it is strategically relevant. IMPORTANT: Only suggest accounts you are highly confident exist and are active — major publications, well-known organizations, established institutions. Do not suggest individual artist accounts or small community accounts that may be inactive or non-existent. If unsure whether an account exists, describe the type of account to look for instead of naming a specific handle.
 
 ---
 
@@ -403,7 +399,7 @@ Output each item from the Instagram checklist above with PASS or FAIL. For every
 
 ### My Observations & Next Steps
 
-MANDATORY: Before writing, re-read the INSTAGRAM REVIEWER NOTES above. Every specific item in those notes must appear as an action item in the bullet list. CHECK REVIEWER NOTES before writing this section — if the notes mention anything about the artist's social media, personal presence, specific content they create, or audience engagement, use it here. Write 3 to 4 sentences that sound like Reilly talking directly to the artist — warm, honest, collegial, like a real person who actually looked at the profile. Use "I", contractions, and speak to the artist as "you". Be specific about what the profile currently communicates and what impression it makes on someone encountering it for the first time. Avoid any sentence that could have been written without actually looking at their Instagram. Then write a bulleted list of specific actionable Instagram recommendations under the subheading "Action Items — Instagram". If ig_notes contains reviewer recommendations, clean them up and preserve every single item as a bullet — do not omit any. If no ig_notes are present, generate recommendations from the checklist results. Always include a recommendation about creating Reels and putting the artist's face and voice in front of their work — make it personal to this artist's specific practice. Each bullet must be executable — format each starting with a verb.
+MANDATORY: Before writing, re-read the INSTAGRAM REVIEWER NOTES above. Every specific item in those notes must appear as an action item in the bullet list. Write 3 to 4 sentences that sound like Reilly talking directly to the artist — warm, honest, collegial, like a real person who actually looked at the profile. Use "I", contractions, and speak to the artist as "you". Be specific about what the profile currently communicates and what impression it makes on someone encountering it for the first time. Avoid any sentence that could have been written without actually looking at their Instagram. Then write a bulleted list under "Action Items — Instagram". If ig_notes contains reviewer recommendations, preserve every single item as a bullet. Always include a Reels recommendation adapted to this artist's specific practice. Each bullet starts with a verb.
 
 ---
 
@@ -411,13 +407,13 @@ MANDATORY: Before writing, re-read the INSTAGRAM REVIEWER NOTES above. Every spe
 
 CONCLUSION — REVIEWER NOTES ARE YOUR SCRIPT. Re-read the REVIEWER NOTES above right now before writing a single word. Every paragraph must reference something specific from those notes. Write 3 paragraphs of 3 to 4 sentences each in Reilly's warm conversational voice. This is the most personal section of the document after the intro. Draw from overall_notes: "${overallNotes}" for specific details — goals stated, timelines mentioned, sales targets, life plans, personal stories. Reference them directly.
 
-Paragraph 1: Frame what makes this artist's position genuinely unique — what existing assets or credibility they already have that most artists spend years trying to build. Be specific to their actual situation.
+Paragraph 1: Frame what makes this artist's situation worth paying attention to — what existing assets, credibility, or context they have that is relevant to their goals. Be specific. Do not compare them to other artists.
 
-Paragraph 2: Name the single highest-leverage opportunity in concrete terms. Give a specific example of what executing on it actually looks like — name a specific artwork, a specific story, a specific action. Make it so vivid the artist can picture doing it.
+Paragraph 2: Name one concrete opportunity in specific terms. Give a specific example of what executing on it actually looks like — name a specific artwork, a specific story, a specific action. Make it vivid enough that the artist can picture doing it.
 
-Paragraph 3: Close with something personal and forward-looking that only applies to this artist — reference a specific goal, timeline, or life detail from overall_notes if present. Create a sense of intentional momentum without overpromising outcomes.
+Paragraph 3: Close with something personal and forward-looking that only applies to this artist — reference a specific goal, timeline, or life detail from overall_notes if present. End on momentum without overpromising outcomes.
 
-The test: every sentence should only make sense for this specific artist. If it could apply to anyone, rewrite it.
+The test: every sentence should only make sense for this specific artist. If it could apply to anyone, rewrite it. No bullet points — prose only.
 
 ---
 
@@ -453,7 +449,6 @@ Niche Master Course Workflow | Find Your True Audience`;
     const reviewText = await callClaudeWithRetry(prompt);
     console.log('Claude generated review successfully');
 
-    // ── POST NOTIFICATION TO SLACK ──
     const notifyRes = await fetch('https://slack.com/api/chat.postMessage', {
       method: 'POST',
       headers: {
@@ -468,7 +463,6 @@ Niche Master Course Workflow | Find Your True Audience`;
     const notifyData = await notifyRes.json();
     console.log('Slack notification posted, channel:', notifyData.channel);
 
-    // ── UPLOAD REVIEW AS SLACK FILE ──
     const fileName = `${artistName.replace(/\s+/g, '_')}_Portfolio_Review.txt`;
     const fileBytes = Buffer.byteLength(reviewText, 'utf8');
 
