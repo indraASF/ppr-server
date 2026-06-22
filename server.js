@@ -1,6 +1,12 @@
 const express = require('express');
 const fetch = require('node-fetch');
+const http = require('http');
+const https = require('https');
 const app = express();
+
+// Keep-alive agents to prevent premature connection close on long Claude responses
+const httpAgent = new http.Agent({ keepAlive: true });
+const httpsAgent = new https.Agent({ keepAlive: true });
 
 app.use(express.json({ limit: '10mb' }));
 app.use((req, res, next) => {
@@ -37,7 +43,8 @@ async function callClaudeWithRetry(prompt, retries = 2) {
           model: 'claude-sonnet-4-6',
           max_tokens: 8000,
           messages: [{ role: 'user', content: prompt }]
-        })
+        }),
+        agent: httpsAgent
       });
       const data = await response.json();
       const text = data?.content?.[0]?.text;
