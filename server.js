@@ -227,7 +227,7 @@ BANNED PUNCTUATION & STRUCTURE:
 BANNED WORDS — do a mental scan for each of these before finishing any paragraph:
 solid / solid foundation / solid base / solid start / strong foundation / good foundation / great foundation / great bones
 tapestry / nuanced / compelling / captivating / striking
-awesome / another level / sick / incredible / amazing
+awesome / another level / sick / incredible / amazing\ngenuinely
 "you have built something genuine here"
 "speaks to" / "resonates with" / "invites the viewer to"
 "navigates" (as in navigates themes of...)
@@ -327,9 +327,7 @@ PARAGRAPH 1 — REQUIRED, PERSONAL OPENING: Re-read the REVIEWER NOTES above rig
 
 PARAGRAPHS 2-4 — REQUIRED, MORE PERSONAL CONTENT: Continue drawing from REVIEWER NOTES. Treat every detail in overall_notes as gold — specific artworks mentioned, personal stories shared, goals stated, career milestones, life context. Reference them by name and with specificity. Use "I" constantly and naturally: "I especially enjoyed...", "I also really admire...", "I kept thinking about...", "I loved hearing that...". The test: would these paragraphs only make sense for this specific artist? If they could apply to anyone, rewrite them. If overall_notes is sparse, draw from art_practice, personal_motivation, and career_length instead — never write something generic.
 
-PARAGRAPH 5 — REQUIRED, CREDENTIAL CONTEXT: Include Reilly's professional framing — something like "Having worked at David Zwirner, I've seen firsthand what separates the artists who get taken seriously from those who don't. This audit covers four crucial areas: website and public presence, artist statement, niche and positioning, and social media strategy." Adapt the wording so it flows naturally from the personal paragraphs before it.
-
-PARAGRAPH 6 — REQUIRED, STAKES: One short paragraph on why these materials matter — something like "Every player in the art world, from collectors and advisors to gallerists and curators, will encounter your work through these same touchpoints." Adapt naturally.
+PARAGRAPH 5 — REQUIRED, STAKES: One short paragraph on why these materials matter — something like "Every player in the art world, from collectors and advisors to gallerists and curators, will encounter your work through these same touchpoints." Adapt naturally.
 
 FINAL PARAGRAPH — REQUIRED, TRANSITION: End with a simple practical line: "I've laid everything out below in a clear, structured way so you can see exactly where things stand."
 
